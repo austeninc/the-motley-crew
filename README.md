@@ -10,6 +10,8 @@ My goal is to turn this bike into a fluffy creature with gigantic googly eyes on
 
 [![Link to YouTube video "its got facken googly eyes on it"](https://img.youtube.com/vi/zrVhUX2bSWI/0.jpg)](https://www.youtube.com/watch?v=zrVhUX2bSWI&t=17s)
 
+> It’s got facken googly eyes on it mate
+
 ### Project Files
 **eyes.ino** - This file contains the code for running the LEDs in the eyes of my bike.
 
