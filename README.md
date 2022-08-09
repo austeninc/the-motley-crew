@@ -4,7 +4,7 @@
 This repo contains the code for my Burning Man bike project.
 
 ### Concept
-Follow my progress on this project on (my website)[https://austenclement.com/building-my-playa-bike-part-1/]
+Follow my progress on this project on [my website](https://austenclement.com/building-my-playa-bike-part-1/)
 
 My goal is to turn this bike into a fluffy creature with gigantic googly eyes on it — like a Muppet. I was inspired by this quote from The Big Lez Show on YouTube:
 
