@@ -43,7 +43,8 @@ const unsigned int sampleRate = 32000; //hz
 
 // Assign file names to variables for playback
 const char *filename0 = "fackinGooglyEyes-8bit.wav";
-const char *filename1 = "sfx1_8bit_32khz.wav";
+const char *filename1 = "oiClarence.wav";
+const char *filename2 = "astralPlanes.wav";
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 
@@ -98,6 +99,60 @@ byte R_angles[NUM_LEDS] = { 185, 198, 210, 225, 233, 247, 4, 16, 28, 38, 50, 62,
 byte R_radii[NUM_LEDS] = { 210, 210, 231, 236, 227, 223, 242, 237, 253, 255, 243, 230, 237, 242, 221, 216, 219, 201, 207, 191, 193, 184, 201, 219, 216, 197, 201, 207, 204, 193, 184, 201, 203, 195, 197, 178, 171, 180, 184, 193, 204, 195, 174, 156, 156, 149, 138, 140, 144, 151, 156, 155, 164, 164, 172, 175, 151, 128, 122, 115, 106, 103, 124, 128, 138, 140, 144, 126, 106, 70, 57, 84, 108, 138, 128, 124, 103, 74, 47, 57, 90, 115, 108, 113, 84, 47, 34, 77, 98, 74 };
 
 CRGB R_leds[NUM_LEDS_R];
+
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////
+// Begin SETUP functions.
+
+void setup()
+{
+  delay(3000); // 3 second delay for recovery
+
+  Serial.begin(9600);
+
+  // Init Circuit Playground library & disable onboard speaker (it is shite)
+  CircuitPlayground.begin();
+  CircuitPlayground.speaker.off();
+
+  // Initialize flash library and check its chip ID.
+  if (!flash.begin()) {
+      Serial.println("Error, failed to initialize flash chip!");
+      while(1);
+  }
+  Serial.print("Flash chip JEDEC ID: 0x"); Serial.println(flash.getJEDECID(), HEX);
+
+  // First call begin to mount the filesystem.
+  if (!fatfs.begin(&flash)) {   // Check that it returns true to make sure the FS was mounted.
+      Serial.println("Failed to mount filesystem!");
+      Serial.println("Was CircuitPython loaded on the board first to create the filesystem?");
+      while(1);
+  }
+  Serial.println("Mounted filesystem!");
+
+  // Initialize audio player
+  Serial.print("Initializing Audio Player...");
+  if (AudioPlayer.begin(sampleRate, NUM_AUDIO_CHANNELS, AUDIO_BUFFER_SIZE) == -1) 
+  {
+      Serial.println(" failed!");
+      return;
+  }
+  Serial.println(" done.");
+
+  // tell FastLED about the LED strip configuration
+  Serial.println("Setting up lights...");
+  FastLED.addLeds<LED_TYPE, DATA_PIN_L, COLOR_ORDER>(L_leds, NUM_LEDS_L); // LEFT EYE
+  FastLED.addLeds<LED_TYPE, DATA_PIN_R, COLOR_ORDER>(R_leds, NUM_LEDS_R); // RIGHT EYE
+
+  FastLED.setBrightness(BRIGHTNESS);
+
+  // Play the wake up sound
+  AudioPlayer.play(filename0, 0);
+  Serial.println("Speaking first words.....");
+
+  Serial.println("Let the light shine!");
+}
 
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
@@ -311,61 +366,7 @@ CRGBPalette16 currentPalette = palettes[currentPaletteIndex];
 ////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////
-// Begin functions.
-
-void setup()
-{
-  delay(3000); // 3 second delay for recovery
-
-  Serial.begin(9600);
-
-  // Init Circuit Playground library & disable onboard speaker (it is shite)
-  CircuitPlayground.begin();
-  CircuitPlayground.speaker.off();
-
-  // Initialize flash library and check its chip ID.
-  if (!flash.begin()) {
-      Serial.println("Error, failed to initialize flash chip!");
-      while(1);
-  }
-  Serial.print("Flash chip JEDEC ID: 0x"); Serial.println(flash.getJEDECID(), HEX);
-
-  // First call begin to mount the filesystem.
-  if (!fatfs.begin(&flash)) {   // Check that it returns true to make sure the FS was mounted.
-      Serial.println("Failed to mount filesystem!");
-      Serial.println("Was CircuitPython loaded on the board first to create the filesystem?");
-      while(1);
-  }
-  Serial.println("Mounted filesystem!");
-
-  // Initialize audio player
-  Serial.print("Initializing Audio Player...");
-  if (AudioPlayer.begin(sampleRate, NUM_AUDIO_CHANNELS, AUDIO_BUFFER_SIZE) == -1) 
-  {
-      Serial.println(" failed!");
-      return;
-  }
-  Serial.println(" done.");
-
-  // tell FastLED about the LED strip configuration
-  Serial.println("Setting up lights...");
-  FastLED.addLeds<LED_TYPE, DATA_PIN_L, COLOR_ORDER>(L_leds, NUM_LEDS_L); // LEFT EYE
-  FastLED.addLeds<LED_TYPE, DATA_PIN_R, COLOR_ORDER>(R_leds, NUM_LEDS_R); // RIGHT EYE
-
-  FastLED.setBrightness(BRIGHTNESS);
-
-  // Play the wake up sound
-  AudioPlayer.play(filename0, 0);
-  Serial.println("Speaking first words.....");
-
-  Serial.println("Let the light shine!");
-}
-
-////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////
-// Make the lights sping
+// Begin running code
 
 void loop()
 {
