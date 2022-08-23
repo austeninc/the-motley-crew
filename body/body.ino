@@ -1,6 +1,6 @@
 #include <Adafruit_Circuit_Playground.h>
 #include <FastLED.h>
-#include <SPI.h>
+#include <SPI.h>         
 
 //FASTLED_USING_NAMESPACE
 

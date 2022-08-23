@@ -1,17 +1,54 @@
+// Include CP & FastLED libraries
 #include <Adafruit_Circuit_Playground.h>
 #include <FastLED.h>
 
-// Attempting to program eyes with matrices to match LED location
-//
-// Anticipating issues with this as I am not sure how to run two different 
-// programs on two different data pins unless they are run in parallel
-//
-// Success or failure here will make or break this project as currently designed
-//
-// Best of luck, soldier.
+// Include these libraries to access internal flash storage
+#include <SPI.h>
+#include <SdFat.h>
+#include <Adafruit_SPIFlash.h>
+
+// This is used to play sound. Thank you AloyseTech!
+#include <Audio_FeatherM0.h>
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////
-// Set up the board & strips
+// Set up accessing flash storage
+//
+// Define the board type... Circuit Playground Express is 
+// not auto-recognized by the SPIFlash/Sdfat libaries
+#define EXTERNAL_FLASH_DEVICES  GD25Q16C
+#define EXTERNAL_FLASH_USE_SPI  SPI
+#define EXTERNAL_FLASH_USE_CS   SS
+
+// Initialize the flash device
+Adafruit_FlashTransport_SPI flashTransport(EXTERNAL_FLASH_USE_CS, EXTERNAL_FLASH_USE_SPI);
+Adafruit_SPIFlash flash(&flashTransport);
+
+// Create a file system object from SdFat
+FatFileSystem fatfs;
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////
+// Set up audio player
+SamdAudio AudioPlayer;
+
+// Define audio properties
+#define NUM_AUDIO_CHANNELS 1
+#define AUDIO_BUFFER_SIZE 1024 //512 works fine for 22.05kh, use 1024 for 32khz and 44.1khz
+
+// Define the audio file sample rate
+const unsigned int sampleRate = 32000; //hz
+
+// Assign file names to variables for playback
+const char *filename0 = "fackinGooglyEyes-8bit.wav";
+const char *filename1 = "sfx1_8bit_32khz.wav";
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////
+// Set up the board & LED strips
 
 #define DATA_PIN_L    A1
 #define DATA_PIN_R    A2
@@ -61,31 +98,6 @@ byte R_angles[NUM_LEDS] = { 185, 198, 210, 225, 233, 247, 4, 16, 28, 38, 50, 62,
 byte R_radii[NUM_LEDS] = { 210, 210, 231, 236, 227, 223, 242, 237, 253, 255, 243, 230, 237, 242, 221, 216, 219, 201, 207, 191, 193, 184, 201, 219, 216, 197, 201, 207, 204, 193, 184, 201, 203, 195, 197, 178, 171, 180, 184, 193, 204, 195, 174, 156, 156, 149, 138, 140, 144, 151, 156, 155, 164, 164, 172, 175, 151, 128, 122, 115, 106, 103, 124, 128, 138, 140, 144, 126, 106, 70, 57, 84, 108, 138, 128, 124, 103, 74, 47, 57, 90, 115, 108, 113, 84, 47, 34, 77, 98, 74 };
 
 CRGB R_leds[NUM_LEDS_R];
-
-////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////
-// The setup function....
-
-void setup()
-{
-  //  delay(3000); // 3 second delay for recovery
-
-  Serial.begin(9600);
-
-  // tell FastLED about the LED strip configuration
-  // LEFT
-  FastLED.addLeds<LED_TYPE, DATA_PIN_L, COLOR_ORDER>(L_leds, NUM_LEDS_L);
-
-  // RIGHT
-  FastLED.addLeds<LED_TYPE, DATA_PIN_R, COLOR_ORDER>(R_leds, NUM_LEDS_R);
-
-  // I don't think I need this line??? CircuitPlayground should handle appropriately.
-  //FastLED.setMaxPowerInVoltsAndMilliamps(5, 1000); // 1A
-
-  FastLED.setBrightness(BRIGHTNESS);
-}
 
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
@@ -291,7 +303,7 @@ const CRGBPalette16 palettes[] = {
 
 const uint8_t paletteCount = ARRAY_SIZE(palettes);
 
-// This actually sets the current color palette
+// This sets the starting color palette
 uint8_t currentPaletteIndex = 0;
 CRGBPalette16 currentPalette = palettes[currentPaletteIndex];
 
@@ -299,7 +311,61 @@ CRGBPalette16 currentPalette = palettes[currentPaletteIndex];
 ////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////
-// This runs the code!
+// Begin functions.
+
+void setup()
+{
+  delay(3000); // 3 second delay for recovery
+
+  Serial.begin(9600);
+
+  // Init Circuit Playground library & disable onboard speaker (it is shite)
+  CircuitPlayground.begin();
+  CircuitPlayground.speaker.off();
+
+  // Initialize flash library and check its chip ID.
+  if (!flash.begin()) {
+      Serial.println("Error, failed to initialize flash chip!");
+      while(1);
+  }
+  Serial.print("Flash chip JEDEC ID: 0x"); Serial.println(flash.getJEDECID(), HEX);
+
+  // First call begin to mount the filesystem.
+  if (!fatfs.begin(&flash)) {   // Check that it returns true to make sure the FS was mounted.
+      Serial.println("Failed to mount filesystem!");
+      Serial.println("Was CircuitPython loaded on the board first to create the filesystem?");
+      while(1);
+  }
+  Serial.println("Mounted filesystem!");
+
+  // Initialize audio player
+  Serial.print("Initializing Audio Player...");
+  if (AudioPlayer.begin(sampleRate, NUM_AUDIO_CHANNELS, AUDIO_BUFFER_SIZE) == -1) 
+  {
+      Serial.println(" failed!");
+      return;
+  }
+  Serial.println(" done.");
+
+  // tell FastLED about the LED strip configuration
+  Serial.println("Setting up lights...");
+  FastLED.addLeds<LED_TYPE, DATA_PIN_L, COLOR_ORDER>(L_leds, NUM_LEDS_L); // LEFT EYE
+  FastLED.addLeds<LED_TYPE, DATA_PIN_R, COLOR_ORDER>(R_leds, NUM_LEDS_R); // RIGHT EYE
+
+  FastLED.setBrightness(BRIGHTNESS);
+
+  // Play the wake up sound
+  AudioPlayer.play(filename0, 0);
+  Serial.println("Speaking first words.....");
+
+  Serial.println("Let the light shine!");
+}
+
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////
+// Make the lights sping
 
 void loop()
 {
@@ -341,7 +407,6 @@ void nextPalette() {
 
 ////////////////////////////////////////////////////////////
 // This IS the code!
-
 // 2D map examples:
 
 void clockwisePalette()
