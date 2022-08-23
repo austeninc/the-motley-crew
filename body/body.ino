@@ -148,6 +148,12 @@ void addGlitter( fract8 chanceOfGlitter)
   }
 }
 
+void rainbow() 
+{
+  // FastLED's built-in rainbow generator
+  fill_rainbow( leds, NUM_LEDS, gHue, 7);
+}
+
 // This function will detect motion
 void checkMotion() {
 
