@@ -21,12 +21,18 @@ CRGB leds[NUM_LEDS_PER_STRIP];
 #define BRIGHTNESS          120
 #define FRAMES_PER_SECOND  60
 
+float X, Y, Z;
+#define MOVE_THRESHOLD 3
+bool motionDetected = true;
+
 void setup() {
   //FastLED.addLeds<NEOPIXEL, A1>(ledsA1, NUM_LEDS_PER_STRIP);
   //FastLED.addLeds<NEOPIXEL, A2>(ledsA2, NUM_LEDS_PER_STRIP);
   //FastLED.addLeds<NEOPIXEL, A3>(ledsA3, NUM_LEDS_PER_STRIP);
   //FastLED.addLeds<NEOPIXEL, A4>(ledsA4, NUM_LEDS_PER_STRIP);
   //FastLED.addLeds<NEOPIXEL, A5>(ledsA5, NUM_LEDS_PER_STRIP);
+
+  CircuitPlayground.begin();
 
   FastLED.addLeds<NEOPIXEL, A1>(leds, NUM_LEDS_PER_STRIP).setDither(BRIGHTNESS < 255);
   FastLED.addLeds<NEOPIXEL, A2>(leds, NUM_LEDS_PER_STRIP).setDither(BRIGHTNESS < 255);
@@ -86,4 +92,52 @@ void pride()
     
     nblend( leds[pixelnumber], newcolor, 64);
   }
+}
+
+// This function adds glitter by sparkling random LEDs
+void addGlitter( fract8 chanceOfGlitter) 
+{
+  if( random8() < chanceOfGlitter) {
+    leds[ random16(NUM_LEDS) ] += CRGB::White;
+  }
+}
+
+// This function will detect motion
+void checkMotion() {
+  //CircuitPlayground.clearPixels();
+  X = CircuitPlayground.motionX();
+  Y = CircuitPlayground.motionY();
+  Z = CircuitPlayground.motionZ();
+ 
+   // Get the magnitude (length) of the 3 axis vector
+  // http://en.wikipedia.org/wiki/Euclidean_vector#Length
+  double storedVector = X*X;
+  storedVector += Y*Y;
+  storedVector += Z*Z;
+  storedVector = sqrt(storedVector);
+  Serial.print("Len: "); Serial.println(storedVector);
+  
+  // wait a bit
+  delay(100);
+  
+  // get new data!
+  X = CircuitPlayground.motionX();
+  Y = CircuitPlayground.motionY();
+  Z = CircuitPlayground.motionZ();
+  double newVector = X*X;
+  newVector += Y*Y;
+  newVector += Z*Z;
+  newVector = sqrt(newVector);
+  Serial.print("New Len: "); Serial.println(newVector);
+  
+  // are we moving 
+  if (abs(10*newVector - 10*storedVector) > MOVE_THRESHOLD) {
+    Serial.println("Moving!");
+    motionDetected = true;
+  }
+  else {
+    Serial.println("Stopped");
+    motionDetected = false;
+  }
+
 }
