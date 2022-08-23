@@ -11,15 +11,21 @@
 int val = 0;
 
 void setup() {
-    pinMode(A3, INPUT);
+    CircuitPlayground.begin();
+    pinMode(A1, INPUT);
+    Serial.begin (9600);
 }
 
 void loop() {
-    val = analogRead(A3);
-    if (val > 0) {
-        CircuitPlayground.redLED(true);
+    val = digitalRead(A1);
+    Serial.println(val);
+    if (val = 0) {
+        for (int n = 0; n < 10; n++) {
+            CircuitPlayground.setPixelColor(n, 255, 255, 255);
+        }
     }
     else {
-        CircuitPlayground.redLED(false);
+        CircuitPlayground.clearPixels();
     }
+    delay(1000);
 }

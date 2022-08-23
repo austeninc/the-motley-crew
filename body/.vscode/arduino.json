@@ -1,0 +1,7 @@
+{
+    "port": "COM7",
+    "board": "arduino:samd:adafruit_circuitplayground_m0",
+    "output": "../ArduinoOutput",
+    "programmer": "arduino:avrisp",
+    "sketch": "body.ino"
+}

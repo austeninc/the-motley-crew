@@ -8,18 +8,22 @@
 // This is the transmitting board.
 ///////////////////////////////////////////////////////////
 
-bool switch_status = CircuitPlayground.slideSwitch();
+bool switch_status = false;
 
 void setup() {
-    pinMode(A3, OUTPUT);
+    CircuitPlayground.begin();
+    pinMode(A7, OUTPUT);
+    Serial.begin (9600);
 }
 
 void loop() {
     switch_status = CircuitPlayground.slideSwitch();
+    Serial.println(switch_status);
     if (switch_status = true) {
-        analogWrite(A3, 255);
+        digitalWrite(A7, HIGH);
     } 
     else {
-        analogWrite(A3, 0);
+        digitalWrite(A7, LOW);
     }
+    delay(1000);
 }

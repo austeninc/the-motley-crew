@@ -1,6 +1,6 @@
 {
     "board": "arduino:samd:adafruit_circuitplayground_m0",
     "port": "COM6",
-    "sketch": "experiments/signal_tx_test.ino",
+    "sketch": "eyes.ino",
     "programmer": "arduino:avrisp"
 }
