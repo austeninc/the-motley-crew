@@ -125,15 +125,6 @@ DEFINE_GRADIENT_PALETTE( purplefly_gp ) {
   191, 252,255, 78,
   255,   0,  0,  0};
 
-// Gradient palette "GMT_cool_gp", originally from
-// http://soliton.vm.bytemark.co.uk/pub/cpt-city/gmt/tn/GMT_cool.png.index.html
-// converted for FastLED with gammas (2.6, 2.2, 2.5)
-// Size: 8 bytes of program space.
-
-DEFINE_GRADIENT_PALETTE( GMT_cool_gp ) {
-    0,   0,255,255,
-  255, 255,  0,255};
-
 // Gradient palette "Sunset_Real_gp", originally from
 // http://soliton.vm.bytemark.co.uk/pub/cpt-city/nd/atmospheric/tn/Sunset_Real.png.index.html
 // converted for FastLED with gammas (2.6, 2.2, 2.5)
@@ -275,7 +266,6 @@ const CRGBPalette16 palettes[] = {
     Analogous_1_gp,   // Blue / red - stark, decent.
     bhw1_28_gp,       // Mermaid colors, okay
     Sunset_Real_gp,   // Heat map good
-    GMT_cool_gp,      // Pink/teal - mehhhh
     purplefly_gp,     // decent, not sure
     LavaColors_p,     // Lava, hot, pretty good
     OceanColors_p,    // Sparkly ocean vibes, okay
