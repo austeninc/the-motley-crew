@@ -286,7 +286,6 @@ const CRGBPalette16 palettes[] = {
     OceanColors_p,    // Sparkly ocean vibes, okay
     ForestColors_p,   // Green, earthy, okay
     PartyColors_p,    // Tighter rainbow, pretty good
-    HeatColors_p,     // Not a vibe!
     IceColors_p       // Better than CloudColors_p
 };
 
