@@ -16,6 +16,7 @@ My goal is to turn this bike into a fluffy creature with gigantic googly eyes on
 
 ## Project Files
 **eyes.ino** - This file contains the code for running the LEDs in the eyes of my bike.
+**body/body.ino** - This file contains the code for running the LEDs in the body of my bike.
 
 ## Resources
 Huge thanks to @jasoncoon for his LED mapper tool, which was instrumental in making this possible.
