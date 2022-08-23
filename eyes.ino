@@ -258,8 +258,8 @@ DEFINE_GRADIENT_PALETTE( dreaming_gp ) {
 //typedef void (*SimplePaletteList[])
 const CRGBPalette16 palettes[] = {
     RainbowColors_p,  // Rainbow, keep
-    dreaming_gp,      // Purple/pink, faded, nice
     bhw1_04_gp,       // Purple orange yellow, GOOD
+    dreaming_gp,      // Purple/pink, faded, nice
     wiki_knutux_gp,   // Orange to green, okay
     bhw1_33_gp,       // Purple - just purple. Pretty good
     bhw4_057_gp,      // Pink & red, good
