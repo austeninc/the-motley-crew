@@ -88,9 +88,9 @@ typedef void (*SimplePatternList[])();
 SimplePatternList patterns = {
     // 2D map examples:
     clockwisePalette,
-    counterClockwisePalette,
     outwardPalette,
-    inwardPalette,
+    counterClockwisePalette,
+    inwardPalette
 //    northPalette,
 //    northEastPalette,
 //    eastPalette,
@@ -115,16 +115,17 @@ uint8_t currentPatternIndex = 0; // Index number of which pattern is current
 
 CRGBPalette16 IceColors_p = CRGBPalette16(CRGB::Black, CRGB::Blue, CRGB::Aqua, CRGB::White);
 
+//typedef void (*SimplePaletteList[])
 const CRGBPalette16 palettes[] = {
     RainbowColors_p,        // 0
-    RainbowStripeColors_p,  // 1
+    //RainbowStripeColors_p,  // 1
     CloudColors_p,          // 2
     LavaColors_p,           // 3
     OceanColors_p,          // 4
     ForestColors_p,         // 5
     PartyColors_p,          // 6
     HeatColors_p,           // 7
-    IceColors_p,            // 8
+    IceColors_p            // 8
 };
 
 const uint8_t paletteCount = ARRAY_SIZE(palettes);
@@ -147,7 +148,7 @@ void loop()
   //L_clockwisePalette();
   //R_counterClockwisePalette();
 
-  counterClockwisePalette();
+  //counterClockwisePalette();
 
   //outwardPalette();
 
@@ -156,6 +157,23 @@ void loop()
 
   // insert a delay to keep the framerate modest
   FastLED.delay(1000 / FRAMES_PER_SECOND);
+
+  EVERY_N_SECONDS( 5 ) { nextPattern(); }
+  EVERY_N_SECONDS( 10 ) { 
+    nextPalette();
+  }
+}
+
+void nextPattern() {
+  Serial.println("Updating pattern.");
+  currentPatternIndex = ( currentPatternIndex + 1 ) % ARRAY_SIZE( patterns );
+}
+
+void nextPalette() {
+  currentPaletteIndex = ( currentPaletteIndex + 1 ) % ARRAY_SIZE ( palettes );
+  currentPalette = palettes[currentPaletteIndex]; 
+  Serial.print("Updating colors to ");
+  Serial.println(currentPaletteIndex);
 }
 
 ////////////////////////////////////////////////////////////
