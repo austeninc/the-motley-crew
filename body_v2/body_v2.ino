@@ -1,65 +1,30 @@
-// Include CP & FastLED libraries
 #include <Adafruit_Circuit_Playground.h>
 #include <FastLED.h>
+#include <SPI.h>         
 
-// Include these libraries to access internal flash storage
-#include <SPI.h>
-#include <SdFat.h>
-#include <Adafruit_SPIFlash.h>
-
-// This is used to play sound. Thank you AloyseTech!
-#include <Audio_FeatherM0.h>
-////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////
-// Set up accessing flash storage
-//
-// Define the board type... Circuit Playground Express is 
-// not auto-recognized by the SPIFlash/Sdfat libaries
-#define EXTERNAL_FLASH_DEVICES  GD25Q16C
-#define EXTERNAL_FLASH_USE_SPI  SPI
-#define EXTERNAL_FLASH_USE_CS   SS
-
-// Initialize the flash device
-Adafruit_FlashTransport_SPI flashTransport(EXTERNAL_FLASH_USE_CS, EXTERNAL_FLASH_USE_SPI);
-Adafruit_SPIFlash flash(&flashTransport);
-
-// Create a file system object from SdFat
-FatFileSystem fatfs;
-////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////
-// Set up audio player
-SamdAudio AudioPlayer;
-
-// Define audio properties
-#define NUM_AUDIO_CHANNELS 1
-#define AUDIO_BUFFER_SIZE 1024 //512 works fine for 22.05kh, use 1024 for 32khz and 44.1khz
-
-// Define the audio file sample rate
-const unsigned int sampleRate = 32000; //hz
-
-// Assign file names to variables for playback
-const char *filename0 = "fackinGooglyEyes-8bit.wav";
-const char *filename1 = "oiClarence.wav";
-const char *filename2 = "astralPlanes.wav";
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////
 // Set up the board & LED strips
 
-#define DATA_PIN_L    A1
-#define DATA_PIN_R    A2
-
-#define LED_TYPE    WS2812B
+// Identifying data pins
+#define LED_TYPE    NEOPIXEL
 #define COLOR_ORDER GRB
 
+#define NUM_LEDS_PER_STRIP    70
+#define NUM_LEDS    NUM_LEDS_PER_STRIP
+//#define NUM_STRIPS  4
+//CRGB ledsA1[NUM_LEDS_PER_STRIP];
+//CRGB ledsA2[NUM_LEDS_PER_STRIP];
+//CRGB ledsA3[NUM_LEDS_PER_STRIP];
+//CRGB ledsA4[NUM_LEDS_PER_STRIP];
+//CRGB ledsA5[NUM_LEDS_PER_STRIP];
+//CRGB leds[NUM_LEDS_PER_STRIP];
+
 // Global variables that impact LED behavior
-#define BRIGHTNESS 120          // Brightness
-#define FRAMES_PER_SECOND 120   // Speed
+#define BRIGHTNESS          120
+#define FRAMES_PER_SECOND  120
 
 // Other setup
 #define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
@@ -76,83 +41,62 @@ uint8_t autoplaySeconds = 2;
 ////////////////////////////////////////////////////////////
 // Set up the eye matrices
 
-#define NUM_LEDS 90
+// Top Tube
+#define NUM_LEDS_TT 70 // Top Tube
 
-// Left eye
-#define NUM_LEDS_L 90
+byte coordsX_TT[NUM_LEDS_TT] = { 0, 0, 0, 0, 15, 15, 15, 15, 30, 30, 30, 30, 45, 45, 45, 45, 60, 60, 60, 60, 75, 75, 75, 75, 90, 90, 90, 90, 105, 105, 105, 105, 120, 120, 120, 120, 135, 135, 135, 135, 150, 150, 150, 150, 165, 165, 165, 165, 180, 180, 180, 180, 195, 195, 195, 195, 210, 210, 210, 210, 225, 225, 225, 225, 240, 240, 240, 240, 255, 255 };
+byte coordsY_TT[NUM_LEDS_TT] = { 0, 85, 170, 255, 0, 85, 170, 255, 0, 85, 170, 255, 0, 85, 170, 255, 0, 85, 170, 255, 0, 85, 170, 255, 0, 85, 170, 255, 0, 85, 170, 255, 0, 85, 170, 255, 0, 85, 170, 255, 0, 85, 170, 255, 0, 85, 170, 255, 0, 85, 170, 255, 0, 85, 170, 255, 0, 85, 170, 255, 0, 85, 170, 255, 0, 85, 170, 255, 0, 85 };
+byte angles_TT[NUM_LEDS_TT] = { 9, 4, 0, 251, 10, 5, 0, 250, 11, 6, 0, 249, 13, 7, 0, 248, 15, 8, 0, 247, 19, 10, 0, 245, 24, 13, 0, 242, 32, 19, 0, 236, 45, 32, 0, 223, 64, 64, 0, 191, 83, 96, 128, 159, 96, 109, 128, 146, 104, 114, 128, 141, 109, 118, 128, 137, 112, 119, 128, 136, 114, 121, 128, 134, 116, 122, 128, 133, 118, 122 };
+byte radii_TT[NUM_LEDS_TT] = { 255, 250, 249, 250, 228, 223, 221, 223, 201, 196, 194, 196, 175, 168, 166, 168, 149, 141, 138, 141, 124, 114, 111, 114, 100, 87, 83, 87, 78, 62, 55, 62, 62, 39, 28, 39, 55, 28, 0, 28, 62, 39, 28, 39, 78, 62, 55, 62, 100, 87, 83, 87, 124, 114, 111, 114, 149, 141, 138, 141, 175, 168, 166, 168, 201, 196, 194, 196, 228, 223 };
 
-byte L_coordsX[NUM_LEDS_L] = { 116, 151, 197, 232, 255, 255, 255, 243, 209, 174, 139, 104, 58, 35, 12, 0, 0, 23, 46, 93, 128, 162, 197, 220, 232, 232, 220, 185, 151, 116, 81, 46, 23, 12, 12, 35, 70, 104, 151, 185, 209, 209, 209, 185, 139, 104, 70, 35, 23, 23, 46, 81, 128, 162, 185, 197, 174, 151, 116, 70, 46, 58, 93, 139, 162, 174, 162, 128, 93, 58, 58, 81, 116, 151, 162, 151, 116, 81, 70, 81, 116, 151, 139, 104, 81, 81, 116, 139, 104, 93 };
-byte L_coordsY[NUM_LEDS_L] = { 255, 255, 231, 206, 170, 134, 97, 61, 24, 12, 0, 0, 24, 36, 73, 121, 158, 194, 231, 243, 243, 231, 206, 182, 134, 97, 61, 36, 24, 12, 24, 49, 85, 121, 170, 206, 219, 231, 231, 206, 170, 134, 97, 61, 49, 49, 61, 85, 121, 170, 194, 219, 219, 206, 182, 134, 97, 73, 73, 85, 158, 194, 206, 206, 182, 146, 109, 85, 85, 121, 158, 194, 194, 182, 146, 109, 97, 109, 146, 182, 182, 158, 121, 109, 134, 170, 170, 146, 121, 146 };
-byte L_angles[NUM_LEDS_L] = { 197, 185, 167, 152, 139, 128, 116, 105, 89, 77, 66, 55, 38, 31, 18, 4, 248, 235, 222, 206, 194, 179, 161, 147, 128, 114, 100, 85, 70, 58, 45, 30, 16, 4, 244, 230, 218, 204, 184, 165, 145, 128, 110, 90, 67, 50, 34, 18, 4, 243, 231, 214, 194, 175, 157, 128, 99, 76, 52, 26, 244, 228, 213, 188, 169, 139, 100, 59, 35, 6, 243, 221, 203, 177, 143, 90, 45, 17, 248, 226, 206, 165, 83, 27, 0, 231, 210, 172, 15, 244 };
-byte L_radii[NUM_LEDS_L] = { 221, 221, 212, 227, 239, 229, 239, 245, 243, 231, 241, 246, 243, 255, 254, 252, 255, 235, 240, 211, 197, 183, 178, 186, 186, 197, 210, 201, 199, 221, 220, 224, 225, 230, 239, 227, 194, 183, 178, 164, 156, 142, 156, 164, 153, 162, 178, 205, 209, 218, 197, 182, 153, 142, 132, 120, 101, 114, 114, 149, 170, 179, 152, 132, 103, 80, 70, 88, 116, 144, 149, 147, 114, 93, 59, 55, 73, 108, 122, 132, 93, 55, 24, 70, 98, 118, 73, 24, 59, 80 };
+CRGB leds_TT[NUM_LEDS_TT];
 
-CRGB L_leds[NUM_LEDS_L];
+// Down Tube
+#define NUM_LEDS_DT 55 // Down Tube
 
-// Right eye
-#define NUM_LEDS_R 90
+byte coordsX_DT[NUM_LEDS_DT] = { 0, 0, 0, 14, 14, 14, 28, 28, 28, 43, 43, 43, 57, 57, 57, 71, 71, 71, 85, 85, 85, 99, 99, 99, 113, 113, 113, 128, 128, 128, 142, 142, 142, 156, 156, 156, 170, 170, 170, 184, 184, 184, 198, 198, 198, 213, 213, 213, 227, 227, 227, 241, 241, 241, 255 };
+byte coordsY_DT[NUM_LEDS_DT] = { 0, 128, 255, 0, 128, 255, 0, 128, 255, 0, 128, 255, 0, 128, 255, 0, 128, 255, 0, 128, 255, 0, 128, 255, 0, 128, 255, 0, 128, 255, 0, 128, 255, 0, 128, 255, 0, 128, 255, 0, 128, 255, 0, 128, 255, 0, 128, 255, 0, 128, 255, 0, 128, 255, 0 };
+byte angles_DT[NUM_LEDS_DT] = { 6, 2, 253, 7, 2, 253, 8, 3, 252, 9, 3, 252, 11, 4, 251, 13, 4, 251, 16, 6, 249, 22, 8, 247, 32, 13, 242, 51, 32, 223, 77, 96, 159, 96, 114, 141, 106, 119, 136, 111, 122, 133, 114, 123, 132, 117, 124, 131, 118, 124, 131, 119, 125, 130, 120 };
+byte radii_DT[NUM_LEDS_DT] = { 255, 252, 252, 229, 226, 226, 203, 199, 199, 177, 173, 173, 151, 146, 146, 126, 120, 120, 101, 94, 94, 77, 68, 68, 56, 42, 42, 42, 19, 19, 42, 19, 19, 56, 42, 42, 77, 68, 68, 101, 94, 94, 126, 120, 120, 151, 146, 146, 177, 173, 173, 203, 199, 199, 229 };
 
-#define NUM_LEDS 90
+CRGB leds_DT[NUM_LEDS_DT];
 
-byte R_coordsX[NUM_LEDS] = { 153, 115, 77, 38, 26, 13, 0, 13, 26, 51, 89, 128, 166, 204, 230, 242, 255, 242, 230, 191, 166, 128, 89, 51, 26, 26, 26, 38, 64, 102, 140, 179, 217, 230, 242, 230, 204, 179, 140, 102, 64, 38, 38, 51, 64, 102, 140, 179, 204, 217, 217, 191, 153, 115, 77, 51, 51, 64, 89, 128, 179, 191, 191, 166, 128, 89, 64, 64, 89, 128, 153, 179, 166, 140, 102, 77, 77, 102, 140, 166, 166, 140, 102, 77, 89, 128, 153, 153, 115, 102 };
-byte R_coordsY[NUM_LEDS] = { 255, 255, 255, 228, 201, 161, 121, 81, 40, 13, 0, 0, 0, 13, 54, 81, 121, 161, 201, 228, 242, 242, 242, 228, 188, 148, 107, 67, 40, 27, 27, 27, 54, 81, 121, 161, 201, 228, 242, 242, 228, 188, 148, 107, 81, 54, 54, 67, 94, 121, 161, 201, 228, 228, 215, 188, 148, 121, 81, 67, 94, 134, 174, 201, 215, 201, 174, 134, 94, 94, 107, 148, 188, 215, 201, 174, 134, 107, 107, 134, 174, 201, 188, 161, 121, 107, 134, 174, 188, 161 };
-byte R_angles[NUM_LEDS] = { 185, 198, 210, 225, 233, 247, 4, 16, 28, 38, 50, 62, 74, 86, 100, 110, 123, 137, 151, 168, 179, 194, 208, 222, 237, 250, 9, 24, 37, 51, 66, 80, 97, 108, 123, 138, 157, 172, 189, 204, 218, 235, 250, 12, 26, 48, 67, 89, 107, 121, 140, 162, 183, 200, 217, 233, 249, 7, 35, 60, 99, 128, 151, 172, 195, 216, 235, 0, 29, 57, 90, 139, 169, 188, 210, 231, 0, 27, 74, 128, 163, 187, 214, 238, 11, 54, 128, 172, 206, 228 };
-byte R_radii[NUM_LEDS] = { 210, 210, 231, 236, 227, 223, 242, 237, 253, 255, 243, 230, 237, 242, 221, 216, 219, 201, 207, 191, 193, 184, 201, 219, 216, 197, 201, 207, 204, 193, 184, 201, 203, 195, 197, 178, 171, 180, 184, 193, 204, 195, 174, 156, 156, 149, 138, 140, 144, 151, 156, 155, 164, 164, 172, 175, 151, 128, 122, 115, 106, 103, 124, 128, 138, 140, 144, 126, 106, 70, 57, 84, 108, 138, 128, 124, 103, 74, 47, 57, 90, 115, 108, 113, 84, 47, 34, 77, 98, 74 };
+// Chain Stays
+#define NUM_LEDS_CS 11 // Chain Stays
 
-CRGB R_leds[NUM_LEDS_R];
+byte coordsX_CS[NUM_LEDS_CS] = { 0, 26, 51, 77, 102, 128, 153, 179, 204, 230, 255 };
+byte coordsY_CS[NUM_LEDS_CS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+byte angles_CS[NUM_LEDS_CS] = { 4, 4, 6, 8, 13, 32, 96, 114, 119, 122, 123 };
+byte radii_CS[NUM_LEDS_CS] = { 255, 209, 163, 118, 73, 33, 33, 73, 118, 163, 209 };
+
+CRGB leds_CS[NUM_LEDS_CS];
 
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////
-// Begin SETUP functions.
-
-void setup()
-{
-  delay(3000); // 3 second delay for recovery
+void setup() {
+  delay(1000); // 1 second delay for recovery
 
   Serial.begin(9600);
 
   // Init Circuit Playground library & disable onboard speaker (it is shite)
   CircuitPlayground.begin();
   CircuitPlayground.speaker.off();
-
-  // Initialize flash library and check its chip ID.
-  if (!flash.begin()) {
-      Serial.println("Error, failed to initialize flash chip!");
-      while(1);
-  }
-  Serial.print("Flash chip JEDEC ID: 0x"); Serial.println(flash.getJEDECID(), HEX);
-
-  // First call begin to mount the filesystem.
-  if (!fatfs.begin(&flash)) {   // Check that it returns true to make sure the FS was mounted.
-      Serial.println("Failed to mount filesystem!");
-      Serial.println("Was CircuitPython loaded on the board first to create the filesystem?");
-      while(1);
-  }
-  Serial.println("Mounted filesystem!");
-
-  // Initialize audio player
-  Serial.print("Initializing Audio Player...");
-  if (AudioPlayer.begin(sampleRate, NUM_AUDIO_CHANNELS, AUDIO_BUFFER_SIZE) == -1) 
-  {
-      Serial.println(" failed!");
-      return;
-  }
-  Serial.println(" done.");
-
+  
   // tell FastLED about the LED strip configuration
-  Serial.println("Setting up lights...");
-  FastLED.addLeds<LED_TYPE, DATA_PIN_L, COLOR_ORDER>(L_leds, NUM_LEDS_L); // LEFT EYE
-  FastLED.addLeds<LED_TYPE, DATA_PIN_R, COLOR_ORDER>(R_leds, NUM_LEDS_R); // RIGHT EYE
+  Serial.println("Initializing LED objects...");
+  FastLED.addLeds<NEOPIXEL, A3>(leds_TT, NUM_LEDS_TT); // Top Tube
+  FastLED.addLeds<NEOPIXEL, A5>(leds_DT, NUM_LEDS_TT); // Down Tube
+  FastLED.addLeds<NEOPIXEL, A2>(leds_CS, NUM_LEDS_TT); // Left Chainstay
+  FastLED.addLeds<NEOPIXEL, A3>(leds_CS, NUM_LEDS_TT); // Right Chainstay
 
+  delay(2000); // 2 second delay for recovery
+  Serial.println("Done.");
+
+  Serial.print("Setting master brightness to ");
+  Serial.println(BRIGHTNESS);
+  // set master brightness control
   FastLED.setBrightness(BRIGHTNESS);
-
-  // Play the wake up sound
-  AudioPlayer.play(filename0, 0);
-  Serial.println("Speaking first words.....");
-  delay(1845);
-  AudioPlayer.stopChannel(0);
-  Serial.println("Let the light shine!");
 }
 
 ////////////////////////////////////////////////////////////
@@ -369,22 +313,11 @@ CRGBPalette16 currentPalette = palettes[currentPaletteIndex];
 ////////////////////////////////////////////////////////////
 // Begin running code
 
-void loop()
-{
+void loop() {
   // Call the current pattern function once, updating the 'leds' array
   patterns[currentPatternIndex]();
 
   offset = beat8(speed);
-
-  //L_clockwisePalette();
-  //R_counterClockwisePalette();
-
-  //counterClockwisePalette();
-
-  //outwardPalette();
-
-  // send the 'leds' array out to the actual LED strip
-  // FastLED.show(); called automatically, internally by FastLED.delay below:
 
   // insert a delay to keep the framerate modest
   FastLED.delay(1000 / FRAMES_PER_SECOND);
@@ -411,54 +344,45 @@ void nextPalette() {
 // This IS the code!
 // 2D map examples:
 
+
 void clockwisePalette()
 {
-  for (uint16_t i = 0; i < NUM_LEDS; i++)
+  for (uint16_t i = 0; i < NUM_LEDS_TT; i++)
   {
-    L_leds[i] = ColorFromPalette(currentPalette, offset + L_angles[i]);
-    R_leds[i] = ColorFromPalette(currentPalette, offset + R_angles[i]);
-  }
-}
-
-void L_clockwisePalette()
-{
-  for (uint16_t i = 0; i < NUM_LEDS; i++)
-  {
-    L_leds[i] = ColorFromPalette(currentPalette, offset + L_angles[i]);
+    leds_TT[i] = ColorFromPalette(currentPalette, offset + angles_TT[i]);
+    leds_DT[i] = ColorFromPalette(currentPalette, offset + angles_DT[i]);
+    leds_CS[i] = ColorFromPalette(currentPalette, offset + angles_CS[i]);
   }
 }
 
 void counterClockwisePalette()
 {
-  for (uint16_t i = 0; i < NUM_LEDS; i++)
+  for (uint16_t i = 0; i < NUM_LEDS_TT; i++)
   {
-    L_leds[i] = ColorFromPalette(currentPalette, offset - L_angles[i]);
-    R_leds[i] = ColorFromPalette(currentPalette, offset - R_angles[i]);
-  }
-}
+    leds_TT[i] = ColorFromPalette(currentPalette, offset - angles_TT[i]);
+    leds_DT[i] = ColorFromPalette(currentPalette, offset - angles_DT[i]);
+    leds_CS[i] = ColorFromPalette(currentPalette, offset - angles_CS[i]);
 
-void R_counterClockwisePalette()
-{
-  for (uint16_t i = 0; i < NUM_LEDS; i++)
-  {
-    R_leds[i] = ColorFromPalette(currentPalette, offset - R_angles[i]);
   }
 }
 
 void outwardPalette()
 {
-  for (uint16_t i = 0; i < NUM_LEDS; i++)
+  for (uint16_t i = 0; i < NUM_LEDS_TT; i++)
   {
-    L_leds[i] = ColorFromPalette(currentPalette, offset - L_radii[i]);
-    R_leds[i] = ColorFromPalette(currentPalette, offset - R_radii[i]);
+    leds_TT[i] = ColorFromPalette(currentPalette, offset - radii_TT[i]);
+    leds_DT[i] = ColorFromPalette(currentPalette, offset - radii_DT[i]);
+    leds_CS[i] = ColorFromPalette(currentPalette, offset - radii_CS[i]);
+
   }
 }
 
 void inwardPalette()
 {
-  for (uint16_t i = 0; i < NUM_LEDS; i++)
+  for (uint16_t i = 0; i < NUM_LEDS_TT; i++)
   {
-    L_leds[i] = ColorFromPalette(currentPalette, offset + L_radii[i]);
-    R_leds[i] = ColorFromPalette(currentPalette, offset + R_radii[i]);
+    leds_TT[i] = ColorFromPalette(currentPalette, offset + radii_TT[i]);
+    leds_DT[i] = ColorFromPalette(currentPalette, offset + radii_DT[i]);
+    leds_CS[i] = ColorFromPalette(currentPalette, offset + radii_CS[i]);
   }
 }
