@@ -1,5 +1,6 @@
 #include <Adafruit_Circuit_Playground.h>
 #include <FastLED.h>
+#include <SPI.h>
 
 //FASTLED_USING_NAMESPACE
 
@@ -22,8 +23,15 @@ CRGB leds[NUM_LEDS_PER_STRIP];
 #define FRAMES_PER_SECOND  60
 
 float X, Y, Z;
-#define MOVE_THRESHOLD 3
-bool motionDetected = true;
+#define MOVE_THRESHOLD 4
+int stopDetected = 0;
+#define IDLE_TIMER  1000
+#define SLEEP_TIMER 9999
+
+int startingBrightness = BRIGHTNESS;
+int fadeAmount = 5;
+
+bool sleepingStatus = false;
 
 void setup() {
   //FastLED.addLeds<NEOPIXEL, A1>(ledsA1, NUM_LEDS_PER_STRIP);
@@ -32,8 +40,12 @@ void setup() {
   //FastLED.addLeds<NEOPIXEL, A4>(ledsA4, NUM_LEDS_PER_STRIP);
   //FastLED.addLeds<NEOPIXEL, A5>(ledsA5, NUM_LEDS_PER_STRIP);
 
-  CircuitPlayground.begin();
+  Serial.begin(9600);
 
+  CircuitPlayground.begin();
+  
+
+  Serial.println("Initializing LED objects...");
   FastLED.addLeds<NEOPIXEL, A1>(leds, NUM_LEDS_PER_STRIP).setDither(BRIGHTNESS < 255);
   FastLED.addLeds<NEOPIXEL, A2>(leds, NUM_LEDS_PER_STRIP).setDither(BRIGHTNESS < 255);
   FastLED.addLeds<NEOPIXEL, A3>(leds, NUM_LEDS_PER_STRIP).setDither(BRIGHTNESS < 255);
@@ -41,32 +53,52 @@ void setup() {
   FastLED.addLeds<NEOPIXEL, A5>(leds, NUM_LEDS_PER_STRIP).setDither(BRIGHTNESS < 255);
 
   delay(3000); // 3 second delay for recovery
+  Serial.println("Done.");
 
+  Serial.print("Setting master brightness to ");
+  Serial.println(BRIGHTNESS);
   // set master brightness control
   FastLED.setBrightness(BRIGHTNESS);
 }
 
 void loop() {
-  if ( motionDetected = true) {
+  checkMotion();
+  if ( stopDetected < IDLE_TIMER-1) {
+    sleepingStatus = false;
     pride();
     FastLED.show();
   }  
   else {
-    for (int i = 0; i < 25; i++){
-      fadeToBlackBy(leds, NUM_LEDS, 5);
-      delay(100);
+    if (sleepingStatus) {
+      delay(1000);
     }
-    FastLED.clear();
-    delay(500);
-    checkMotion();
+    else{
+      sleepyTime();
+    }
   }
+}
+
+void idleVibes() {
+  
+}
+
+void sleepyTime() {
+  Serial.println("Fading out");
+
+  for (int i = 0; i < 500; i++) {
+    fadeToBlackBy(leds, NUM_LEDS, 3);
+    FastLED.show();
+  }
+  
+  sleepingStatus = true;
+
+  //startingBrightness = startingBrightness - fadeAmount;
 }
 
 // This function draws rainbows with an ever-changing,
 // widely-varying set of parameters.
 void pride() 
 {
-  while( motionDetected = true ) {
     static uint16_t sPseudotime = 0;
     static uint16_t sLastMillis = 0;
     static uint16_t sHue16 = 0;
@@ -104,9 +136,8 @@ void pride()
       
       nblend( leds[pixelnumber], newcolor, 64);
     }
-
-    checkMotion();
-  }
+    //Serial.print("Calling check motion...");
+    //checkMotion();
 }
 
 // This function adds glitter by sparkling random LEDs
@@ -119,6 +150,9 @@ void addGlitter( fract8 chanceOfGlitter)
 
 // This function will detect motion
 void checkMotion() {
+
+Serial.print("Checking motion...");
+
   //CircuitPlayground.clearPixels();
   X = CircuitPlayground.motionX();
   Y = CircuitPlayground.motionY();
@@ -133,7 +167,7 @@ void checkMotion() {
   Serial.print("Len: "); Serial.println(storedVector);
   
   // wait a bit
-  delay(100);
+  //delay(100);
   
   // get new data!
   X = CircuitPlayground.motionX();
@@ -148,11 +182,17 @@ void checkMotion() {
   // are we moving 
   if (abs(10*newVector - 10*storedVector) > MOVE_THRESHOLD) {
     Serial.println("Moving!");
-    motionDetected = true;
+    stopDetected = 0;
   }
   else {
-    Serial.println("Stopped");
-    motionDetected = false;
+    if ( stopDetected > IDLE_TIMER-1 ) {
+      //delay(500);
+      return;
+    }
+    else {
+      stopDetected++;
+      Serial.print("Stopped. Stop counter updating to ");
+      Serial.print(stopDetected);
+    }
   }
-
 }

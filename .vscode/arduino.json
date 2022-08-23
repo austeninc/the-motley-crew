@@ -1,6 +1,6 @@
 {
     "board": "arduino:samd:adafruit_circuitplayground_m0",
-    "port": "COM6",
+    "port": "COM7",
     "sketch": "eyes.ino",
     "programmer": "arduino:avrisp"
 }
