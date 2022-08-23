@@ -266,6 +266,7 @@ DEFINE_GRADIENT_PALETTE( dreaming_gp ) {
 
 //typedef void (*SimplePaletteList[])
 const CRGBPalette16 palettes[] = {
+    RainbowColors_p,  // Rainbow, keep
     dreaming_gp,      // Purple/pink, faded, nice
     bhw1_04_gp,       // Purple orange yellow, GOOD
     wiki_knutux_gp,   // Orange to green, okay
@@ -274,10 +275,8 @@ const CRGBPalette16 palettes[] = {
     Analogous_1_gp,   // Blue / red - stark, decent.
     bhw1_28_gp,       // Mermaid colors, okay
     Sunset_Real_gp,   // Heat map good
-    RainbowColors_p,  // Rainbow, keep
     GMT_cool_gp,      // Pink/teal - mehhhh
     purplefly_gp,     // decent, not sure
-    CloudColors_p,    // mehhhh
     LavaColors_p,     // Lava, hot, pretty good
     OceanColors_p,    // Sparkly ocean vibes, okay
     ForestColors_p,   // Green, earthy, okay
@@ -316,8 +315,8 @@ void loop()
   // insert a delay to keep the framerate modest
   FastLED.delay(1000 / FRAMES_PER_SECOND);
 
-  //EVERY_N_SECONDS( 20 ) { nextPattern(); }
-  EVERY_N_SECONDS( 20 ) { 
+  EVERY_N_SECONDS( 60 ) { nextPattern(); }
+  EVERY_N_SECONDS( 60 ) { 
     nextPalette();
   }
 }
