@@ -115,10 +115,21 @@ uint8_t currentPatternIndex = 0; // Index number of which pattern is current
 
 CRGBPalette16 IceColors_p = CRGBPalette16(CRGB::Black, CRGB::Blue, CRGB::Aqua, CRGB::White);
 
+// Gradient palette "purplefly_gp", originally from
+// http://soliton.vm.bytemark.co.uk/pub/cpt-city/rc/tn/purplefly.png.index.html
+// converted for FastLED with gammas (2.6, 2.2, 2.5)
+// Size: 16 bytes of program space.
+DEFINE_GRADIENT_PALETTE( purplefly_gp ) {
+    0,   0,  0,  0,
+   63, 239,  0,122,
+  191, 252,255, 78,
+  255,   0,  0,  0};
+
+
 //typedef void (*SimplePaletteList[])
 const CRGBPalette16 palettes[] = {
     RainbowColors_p,        // 0
-    //RainbowStripeColors_p,  // 1
+    purplefly_gp,  // 1
     CloudColors_p,          // 2
     LavaColors_p,           // 3
     OceanColors_p,          // 4
