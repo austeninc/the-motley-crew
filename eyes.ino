@@ -125,18 +125,165 @@ DEFINE_GRADIENT_PALETTE( purplefly_gp ) {
   191, 252,255, 78,
   255,   0,  0,  0};
 
+// Gradient palette "GMT_cool_gp", originally from
+// http://soliton.vm.bytemark.co.uk/pub/cpt-city/gmt/tn/GMT_cool.png.index.html
+// converted for FastLED with gammas (2.6, 2.2, 2.5)
+// Size: 8 bytes of program space.
+
+DEFINE_GRADIENT_PALETTE( GMT_cool_gp ) {
+    0,   0,255,255,
+  255, 255,  0,255};
+
+// Gradient palette "Sunset_Real_gp", originally from
+// http://soliton.vm.bytemark.co.uk/pub/cpt-city/nd/atmospheric/tn/Sunset_Real.png.index.html
+// converted for FastLED with gammas (2.6, 2.2, 2.5)
+// Size: 28 bytes of program space.
+
+DEFINE_GRADIENT_PALETTE( Sunset_Real_gp ) {
+    0, 120,  0,  0,
+   22, 179, 22,  0,
+   51, 255,104,  0,
+   85, 167, 22, 18,
+  135, 100,  0,103,
+  198,  16,  0,130,
+  255,   0,  0,160};
+
+// Gradient palette "bhw1_28_gp", originally from
+// http://soliton.vm.bytemark.co.uk/pub/cpt-city/bhw/bhw1/tn/bhw1_28.png.index.html
+// converted for FastLED with gammas (2.6, 2.2, 2.5)
+// Size: 32 bytes of program space.
+
+DEFINE_GRADIENT_PALETTE( bhw1_28_gp ) {
+    0,  75,  1,221,
+   30, 252, 73,255,
+   48, 169,  0,242,
+  119,   0,149,242,
+  170,  43,  0,242,
+  206, 252, 73,255,
+  232,  78, 12,214,
+  255,   0,149,242};
+
+// Gradient palette "Analogous_1_gp", originally from
+// http://soliton.vm.bytemark.co.uk/pub/cpt-city/nd/red/tn/Analogous_1.png.index.html
+// converted for FastLED with gammas (2.6, 2.2, 2.5)
+// Size: 20 bytes of program space.
+
+DEFINE_GRADIENT_PALETTE( Analogous_1_gp ) {
+    0,   3,  0,255,
+   63,  23,  0,255,
+  127,  67,  0,255,
+  191, 142,  0, 45,
+  255, 255,  0,  0};
+
+// Gradient palette "bhw4_057_gp", originally from
+// http://soliton.vm.bytemark.co.uk/pub/cpt-city/bhw/bhw4/tn/bhw4_057.png.index.html
+// converted for FastLED with gammas (2.6, 2.2, 2.5)
+// Size: 28 bytes of program space.
+
+DEFINE_GRADIENT_PALETTE( bhw4_057_gp ) {
+    0,   6,  0,  1,
+   22,  17,  0,  1,
+   58,  20,  1,  2,
+   91,  75,  0, 12,
+  127, 199,  1, 41,
+  204,  17,  0,  1,
+  255,   6,  0,  1};
+
+// Gradient palette "bhw1_33_gp", originally from
+// http://soliton.vm.bytemark.co.uk/pub/cpt-city/bhw/bhw1/tn/bhw1_33.png.index.html
+// converted for FastLED with gammas (2.6, 2.2, 2.5)
+// Size: 16 bytes of program space.
+
+DEFINE_GRADIENT_PALETTE( bhw1_33_gp ) {
+    0,   2,  1,  8,
+   94,  79,  2,212,
+  140, 110, 11,197,
+  255,   2,  1,  8};
+
+// Gradient palette "wiki_knutux_gp", originally from
+// http://soliton.vm.bytemark.co.uk/pub/cpt-city/wkp/knutux/tn/wiki-knutux.png.index.html
+// converted for FastLED with gammas (2.6, 2.2, 2.5)
+// Size: 64 bytes of program space.
+
+DEFINE_GRADIENT_PALETTE( wiki_knutux_gp ) {
+    0,  10,108, 18,
+   31,  10,108, 18,
+   31,  32,141, 15,
+   63,  32,141, 15,
+   63, 104,173, 23,
+   95, 104,173, 23,
+   95, 177,187, 23,
+  127, 177,187, 23,
+  127, 255,205,  1,
+  159, 255,205,  1,
+  159, 255,159,  1,
+  191, 255,159,  1,
+  191, 255, 86,  1,
+  223, 255, 86,  1,
+  223, 255, 51,  1,
+  255, 255, 51,  1};
+
+// Gradient palette "bhw1_04_gp", originally from
+// http://soliton.vm.bytemark.co.uk/pub/cpt-city/bhw/bhw1/tn/bhw1_04.png.index.html
+// converted for FastLED with gammas (2.6, 2.2, 2.5)
+// Size: 20 bytes of program space.
+
+DEFINE_GRADIENT_PALETTE( bhw1_04_gp ) {
+    0, 229,227,  1,
+   15, 227,101,  3,
+  142,  40,  1, 80,
+  198,  17,  1, 79,
+  255,   0,  0, 45};
+
+// Gradient palette "dreaming_gp", originally from
+// http://soliton.vm.bytemark.co.uk/pub/cpt-city/jjg/neo10/liht/tn/dreaming.png.index.html
+// converted for FastLED with gammas (2.6, 2.2, 2.5)
+// Size: 80 bytes of program space.
+
+DEFINE_GRADIENT_PALETTE( dreaming_gp ) {
+    0, 229,100,228,
+   25, 229,100,228,
+   25, 165, 66,188,
+   51, 165, 66,188,
+   51, 107, 41,151,
+   76, 107, 41,151,
+   76,  64, 25,119,
+  102,  64, 25,119,
+  102,  32, 13, 91,
+  127,  32, 13, 91,
+  127,  20,  4, 66,
+  153,  20,  4, 66,
+  153,  13,  3, 47,
+  178,  13,  3, 47,
+  178,   8,  3, 31,
+  204,   8,  3, 31,
+  204,   5,  2, 19,
+  229,   5,  2, 19,
+  229,   2,  1, 10,
+  255,   2,  1, 10};
+
+
 
 //typedef void (*SimplePaletteList[])
 const CRGBPalette16 palettes[] = {
-    RainbowColors_p,        // 0
-    purplefly_gp,  // 1
-    CloudColors_p,          // 2
-    LavaColors_p,           // 3
-    OceanColors_p,          // 4
-    ForestColors_p,         // 5
-    PartyColors_p,          // 6
-    HeatColors_p,           // 7
-    IceColors_p            // 8
+    dreaming_gp,      // Purple/pink, faded, nice
+    bhw1_04_gp,       // Purple orange yellow, GOOD
+    wiki_knutux_gp,   // Orange to green, okay
+    bhw1_33_gp,       // Purple - just purple. Pretty good
+    bhw4_057_gp,      // Pink & red, good
+    Analogous_1_gp,   // Blue / red - stark, decent.
+    bhw1_28_gp,       // Mermaid colors, okay
+    Sunset_Real_gp,   // Heat map good
+    RainbowColors_p,  // Rainbow, keep
+    GMT_cool_gp,      // Pink/teal - mehhhh
+    purplefly_gp,     // decent, not sure
+    CloudColors_p,    // mehhhh
+    LavaColors_p,     // Lava, hot, pretty good
+    OceanColors_p,    // Sparkly ocean vibes, okay
+    ForestColors_p,   // Green, earthy, okay
+    PartyColors_p,    // Tighter rainbow, pretty good
+    HeatColors_p,     // Not a vibe!
+    IceColors_p       // Better than CloudColors_p
 };
 
 const uint8_t paletteCount = ARRAY_SIZE(palettes);
@@ -169,8 +316,8 @@ void loop()
   // insert a delay to keep the framerate modest
   FastLED.delay(1000 / FRAMES_PER_SECOND);
 
-  EVERY_N_SECONDS( 5 ) { nextPattern(); }
-  EVERY_N_SECONDS( 10 ) { 
+  //EVERY_N_SECONDS( 20 ) { nextPattern(); }
+  EVERY_N_SECONDS( 20 ) { 
     nextPalette();
   }
 }
