@@ -22,8 +22,12 @@
 uint8_t offset = 0; // rotating "base color" used by many of the patterns
 uint8_t speed = 30;
 
-boolean autoplay = true;
-uint8_t autoplaySeconds = 2;
+//boolean autoplay = true;
+//uint8_t autoplaySeconds = 2;
+
+boolean idling = false;
+boolean tired = false;
+boolean sleeping = false;
 
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
@@ -336,6 +340,12 @@ void loop() {
   EVERY_N_SECONDS( 60 ) { nextPalette(); }
 }
 
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////
+// Pattern/Color Changing Functions
+
 void nextPattern() {
   Serial.println("Updating pattern.");
   currentPatternIndex = ( currentPatternIndex + 1 ) % ARRAY_SIZE( patterns );
@@ -346,6 +356,25 @@ void nextPalette() {
   currentPalette = palettes[currentPaletteIndex]; 
   //Serial.print("Updating colors to ");  
   //Serial.println(currentPaletteIndex);
+}
+
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////
+// Idle & Sleep Functions
+
+void idle() {
+  // This function will loop through idle animations when bool `idling` is true
+
+}
+
+void goToSleep() {
+  // This function will fade out all lights after idle() has been running for some time
+}
+
+void sleep() {
+  // This function simply watches for an IR signal from the 'brain' CircuitPlayground before exiting
 }
 
 ////////////////////////////////////////////////////////////

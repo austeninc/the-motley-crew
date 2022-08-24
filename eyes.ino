@@ -88,8 +88,12 @@ const char *filename2 = "astralPlanes.wav";
 uint8_t offset = 0; // rotating "base color" used by many of the patterns
 uint8_t speed = 30;
 
-boolean autoplay = true;
-uint8_t autoplaySeconds = 2;
+//boolean autoplay = true;
+//uint8_t autoplaySeconds = 2;
+
+boolean idling = false;
+boolean tired = false;
+boolean sleeping = false;
 
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
@@ -129,9 +133,9 @@ CRGB R_leds[NUM_LEDS_R];
 
 void setup()
 {
-  delay(3000); // 3 second delay for recovery
+  delay(1000); // 1 second delay for recovery
 
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   // Init Circuit Playground library & disable onboard speaker (it is shite)
   CircuitPlayground.begin();
@@ -429,6 +433,12 @@ void loop()
   EVERY_N_SECONDS( 60 ) { nextPalette(); }
 }
 
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////
+// Pattern/Color Changing Functions
+
 void nextPattern() {
   //Serial.println("Updating pattern.");
   currentPatternIndex = ( currentPatternIndex + 1 ) % ARRAY_SIZE( patterns );
@@ -439,6 +449,29 @@ void nextPalette() {
   currentPalette = palettes[currentPaletteIndex]; 
   //Serial.print("Updating colors to ");
   //Serial.println(currentPaletteIndex);
+}
+
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////
+// Idle & Sleep Functions
+
+void idle() {
+  // This function will send an IR signal to the 'spine' CircuitPlayground to have it begin its idle loop.
+  // Then this function will loop through the eyes idle animations when bool `idling` is true
+}
+
+void goToSleep() {
+  // This function will fade out all lights after idle() has been running for some time
+}
+
+void sleep() {
+  // This function checks for motion. If motion is detected, call wakeUp()
+}
+
+void wakeUp() {
+  // This function will play a random sound clip and then send an IR signal to the 'nerves' to resume its normal loop
 }
 
 ////////////////////////////////////////////////////////////
