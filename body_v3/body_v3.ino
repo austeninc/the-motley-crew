@@ -23,7 +23,7 @@
 //CRGB leds[NUM_LEDS_PER_STRIP];
 
 // Global variables that impact LED behavior
-#define BRIGHTNESS          120
+#define BRIGHTNESS          55
 #define FRAMES_PER_SECOND  120
 
 // Other setup
@@ -111,15 +111,14 @@ typedef void (*SimplePatternList[])();
 SimplePatternList patterns = {
     //// 2D map examples:
     //northEastPalette, // Coollllll ISH. Front-to-Back fun design. Beating heart almost
-    //eastPalette,      // Great. Standard front-to-back. Could be faster?
+    eastPalette,      // Great. Standard front-to-back. Could be faster?
     //southEastPalette, // Mehhhh kind of a weird flashing pattern. Front to back though
-    //southPalette,     // Opposite of north palette... I like it a little better but ugh. Get rid of her.
     //westPalette,      // Not bad. Back-to-front kind of deal.
     //northWestPalette, // A lot like northEast. Kind of flashy but good. Back-to-front.
 
     
-    //inwardPalette, // Pretty solid. 
-    //outwardPalette, // Not bad, use sparingly.
+    inwardPalette, // Not bad, use sparingly.
+    outwardPalette, // Pretty solid. 
 
     //// Others
     confusedEast, // Good shit.
@@ -139,6 +138,7 @@ SimplePatternList patterns = {
     //// POSSIBLE REJECTS
     //northPalette,     // weird, no like... COULD BE GOOD IDLE WITH RIGHT COLORS
     //southWestPalette, // Bad.
+    //southPalette,     // Opposite of north palette... I like it a little better but ugh. Get rid of her.
     //clockwisePalette, // Fuck this. Honestly it's just confusing.
     //counterClockwisePalette, // Also just confusing. Fuck this one too.
     //beatwave, // I hate it!
@@ -301,16 +301,16 @@ DEFINE_GRADIENT_PALETTE( dreaming_gp ) {
 
 //typedef void (*SimplePaletteList[])
 const CRGBPalette16 palettes[] = {
-    //RainbowColors_p,  // Rainbow, keep
-    //bhw1_04_gp,       // Purple orange yellow, GOOD
-    //wiki_knutux_gp,   // Orange to green, okay
-    //bhw1_33_gp,       // Purple - just purple. Pretty alright. Idle color?
-    //bhw4_057_gp,      // Pink & red, good. Love vibes
-    //bhw1_28_gp,       // Mermaid colors, good with front-to-back patterns
-    //Sunset_Real_gp,   // Heat map good
+    RainbowColors_p,  // Rainbow, keep
+    bhw1_04_gp,       // Purple orange yellow, GOOD
+    wiki_knutux_gp,   // Orange to green, okay
+    bhw1_33_gp,       // Purple - just purple. Pretty alright. Idle color?
+    bhw4_057_gp,      // Pink & red, good. Love vibes
+    bhw1_28_gp,       // Mermaid colors, good with front-to-back patterns
+    Sunset_Real_gp,   // Heat map good
     purplefly_gp,     // Pretty good. It's a vibe.
-    //LavaColors_p,     // Lava, hot, pretty good. A little too scary maybe. Angry? Bumped?
-    //IceColors_p       // Better than CloudColors_p. Keep.
+    LavaColors_p,     // Lava, hot, pretty good. A little too scary maybe. Angry? Bumped?
+    IceColors_p       // Better than CloudColors_p. Keep.
 
     //// POSSIBLE REJECTS
     //dreaming_gp,      // Purple/pink, faded, nice??? I kinda hate it tbh
@@ -342,7 +342,7 @@ void loop() {
   FastLED.delay(1000 / FRAMES_PER_SECOND);
 
   EVERY_N_SECONDS( 20 ) { nextPattern(); }
-  //EVERY_N_SECONDS( 20 ) { nextPalette(); }
+  EVERY_N_SECONDS( 10 ) { nextPalette(); }
 }
 
 void nextPattern() {
@@ -358,7 +358,7 @@ void nextPalette() {
 }
 
 ////////////////////////////////////////////////////////////
-// This IS the code!
+// Define the patterns
 // 2D map examples:
 
 void northPalette()
