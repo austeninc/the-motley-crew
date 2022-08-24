@@ -6,6 +6,28 @@
 ////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////
+// Set up the infrared codes
+#define MY_PROTOCOL NECX
+#define MY_BITS 32
+#define IR_0      0xE0E0887736  
+#define IR_1      0xE0E020DF37  
+#define IR_2      0xE0E0A05F38  
+#define IR_3      0xE0E0609F39  
+#define IR_4      0xE0E010EF40  
+#define IR_5      0xE0E0906F41  
+#define IR_6      0xE0E050AF42  
+#define IR_7      0xE0E030CF
+#define IR_8      0xE0E0B04F
+#define IR_9      0xE0E0708F
+#define MY_MUTE   0xE0E0F00F
+#define MY_POWER  0xE0E040BF
+
+uint32_t decodedValue = 0;
+
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////
 // Set up the board & LED strips
 
 // Identifying data pins
@@ -26,7 +48,7 @@ uint8_t speed = 30;
 //uint8_t autoplaySeconds = 2;
 
 boolean idling = false;
-boolean tired = true;
+boolean tired = false;
 boolean sleeping = false;
 
 ////////////////////////////////////////////////////////////
@@ -303,6 +325,8 @@ const uint8_t paletteCount = ARRAY_SIZE(palettes);
 uint8_t currentPaletteIndex = 0;
 CRGBPalette16 currentPalette = palettes[currentPaletteIndex];
 
+uint8_t resumePaletteIndex = 0;
+
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 
@@ -322,7 +346,7 @@ void loop() {
   }
   */
 
-  getSignal();
+  
 
   // If we are not idling or tired or sleeping, run normal animations
   if (! idling && ! tired && ! sleeping) {
@@ -336,6 +360,7 @@ void loop() {
 
     EVERY_N_SECONDS( 90 ) { nextPattern(); }
     EVERY_N_SECONDS( 60 ) { nextPalette(); }
+    EVERY_N_SECONDS( 5 )  { Serial.println("Still awake."); }
   }
   if (idling && ! tired && ! sleeping) {
     idle();
@@ -354,6 +379,8 @@ void loop() {
   if (! idling && ! tired && sleeping) {
     sleep();
   }
+
+  getSignal();
 }
 
 ////////////////////////////////////////////////////////////
@@ -381,12 +408,52 @@ void nextPalette() {
 // Infrared Signal Check
 
 void getSignal() {
-  if (CircuitPlayground.irReceiver.getResults()) {
-    if (CircuitPlayground.irDecoder.decode()) {
+  if ( CircuitPlayground.irReceiver.getResults() ) {
+    CircuitPlayground.irDecoder.decode();
+    decodedValue = CircuitPlayground.irDecoder.value;
+    //decodedValue = CircuitPlayground.irDecoder.value;
+    //CircuitPlayground.irDecoder.dumpResults(false);
+    switch ( decodedValue ) {
+      case IR_0:  // If IR_0 is decoded, enter idling mode
         CircuitPlayground.irDecoder.dumpResults(false);
+        Serial.println("Idle signal received.");
+        idling = true;
+        tired = false;
+        sleeping = false;
+        CircuitPlayground.irReceiver.enableIRIn();
+        decodedValue = 0;
+        break;
+      case IR_1:  // If IR_1 is decoded, trigger go to sleep
+        CircuitPlayground.irDecoder.dumpResults(false);
+        Serial.println("Go to sleep signal received.");
+        idling = false;
+        tired = true;
+        sleeping = false;
+        CircuitPlayground.irReceiver.enableIRIn();
+        decodedValue = 0;
+        break;
+      case IR_2:  // If IR_2 is decoded, wake up
+      //case 0xE0E0A05F38:  // If IR_2 is decoded, wake up
+        CircuitPlayground.irDecoder.dumpResults(false);
+        Serial.println("Wake up signal received.");
+        wakeUp();
+        //idling = false;
+        //tired = false;
+        //sleeping = false;
+        CircuitPlayground.irReceiver.enableIRIn();
+        decodedValue = 0;
+        break;
+      default:    // If nothing is decoded, move on
+        if ( CircuitPlayground.irDecoder.decode() ) {
+          CircuitPlayground.irDecoder.dumpResults(false);
+          decodedValue = 0;
+        }
+        //EVERY_N_SECONDS(5) { Serial.println("No signals match last 5 seconds."); }
+        CircuitPlayground.irReceiver.enableIRIn();
+        break;
     }
-    CircuitPlayground.irReceiver.enableIRIn();
   }
+
 }
 
 ////////////////////////////////////////////////////////////
@@ -398,12 +465,22 @@ void getSignal() {
 void idle() {
   // This function will loop through idle animations when bool `idling` is true
 
+  Serial.println("Starting idle.");
+  Serial.print("Palette before idle: ");
+  Serial.print(currentPaletteIndex);
+  Serial.print(". Pattern before idle: ");
+  Serial.println(currentPatternIndex);
+
+  resumePaletteIndex = currentPaletteIndex;
+  resumePatternIndex = currentPatternIndex;
+
   // Setup the idle animation
   currentPalette = palettes[3];
-  resumePatternIndex = currentPatternIndex;
   currentPatternIndex = 3;
   speed = 15;
   FastLED.setBrightness(30);
+
+  decodedValue = 0;
 
   // Loop until idling = false || tired = true
   // Listen for IR signal from eyes -- if resume signal recv'd, set idling = false
@@ -424,6 +501,7 @@ void idle() {
 
 void goToSleep() {
   // This function will fade out all lights after idle() has been running for some time
+  Serial.println("Going to sleep");
   idling = false;
   FastLED.clear(true);
   sleeping = true;
@@ -431,8 +509,30 @@ void goToSleep() {
 }
 
 void sleep() {
-  // This function simply watches for an IR signal from the 'brain' CircuitPlayground before exiting
+  EVERY_N_SECONDS( 5 )  { Serial.println("Still sleeping."); }
+  // This function resets the idle variables and then simply watches for an IR signal from the 'brain' CircuitPlayground before exiting
+  //currentPatternIndex = resumePatternIndex;
+  //currentPaletteIndex = resumePaletteIndex;
+  //speed = 30;
+  //FastLED.setBrightness(BRIGHTNESS);
   getSignal();
+}
+
+void wakeUp() {
+  idling = false;
+  tired = false;
+  sleeping = false;
+  Serial.println("Waking up.");
+  Serial.print("Resuming palette: ");
+  Serial.print(resumePaletteIndex);
+  Serial.print(". Resuming pattern: ");
+  Serial.println(resumePatternIndex);
+
+  currentPatternIndex = resumePatternIndex;
+  currentPaletteIndex = resumePaletteIndex;
+  currentPalette = palettes[currentPaletteIndex]; 
+  speed = 30;
+  FastLED.setBrightness(BRIGHTNESS);
 }
 
 ////////////////////////////////////////////////////////////

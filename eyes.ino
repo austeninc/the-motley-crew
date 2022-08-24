@@ -402,13 +402,51 @@ void loop()
 
   // Send IR signal if buttons are pressed
   if (CircuitPlayground.leftButton()) {
-    Serial.println("Sending IR LEFT_BUTTON");
-    CircuitPlayground.irSend.send(MY_PROTOCOL, MY_MUTE, MY_BITS);
+    Serial.println("Sending IR_0 to trigger idle");
+    CircuitPlayground.irSend.send(MY_PROTOCOL, IR_0, MY_BITS);
+    //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_0, MY_BITS);
+    //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_0, MY_BITS);
+    //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_0, MY_BITS);
+    //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_0, MY_BITS);
+    //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_0, MY_BITS);
+    //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_0, MY_BITS);
+    //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_0, MY_BITS);
+    //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_0, MY_BITS);
+    //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_0, MY_BITS);
+    //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_0, MY_BITS);
+    //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_0, MY_BITS);
+    //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_0, MY_BITS);
+    //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_0, MY_BITS);
+    //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_0, MY_BITS);
+    //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_0, MY_BITS);
+    //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_0, MY_BITS);
+    //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_0, MY_BITS);
+    //Serial.println("Transmittted 18x IR_0 signals");
+    //delay(1000);
     //while (CircuitPlayground.leftButton()) {}
   }
   if (CircuitPlayground.rightButton()) {
-    Serial.println("Sending IR RIGHT_BUTTON");
-    CircuitPlayground.irSend.send(MY_PROTOCOL, MY_POWER, MY_BITS);
+    Serial.println("Sending IR_2 to trigger wake up");
+    CircuitPlayground.irSend.send(MY_PROTOCOL, IR_2, MY_BITS);
+    //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_2, MY_BITS);
+    //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_2, MY_BITS);
+    //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_2, MY_BITS);
+    //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_2, MY_BITS);
+    //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_2, MY_BITS);
+    //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_2, MY_BITS);
+    //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_2, MY_BITS);
+    //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_2, MY_BITS);
+    //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_2, MY_BITS);
+    //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_2, MY_BITS);
+    //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_2, MY_BITS);
+    //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_2, MY_BITS);
+    //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_2, MY_BITS);
+    //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_2, MY_BITS);
+    //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_2, MY_BITS);
+    //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_2, MY_BITS);
+    //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_2, MY_BITS);
+    //Serial.println("Transmittted 18x IR_2 signals");
+    //delay(1000);
     //while (CircuitPlayground.rightButton()) {}
   }
 
