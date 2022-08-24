@@ -322,12 +322,7 @@ void loop() {
   }
   */
 
-  if (CircuitPlayground.irReceiver.getResults()) {
-    if (CircuitPlayground.irDecoder.decode()) {
-        CircuitPlayground.irDecoder.dumpResults(false);
-    }
-    CircuitPlayground.irReceiver.enableIRIn();
-  }
+  getSignal();
 
   // If we are not idling or tired or sleeping, run normal animations
   if (! idling && ! tired && ! sleeping) {
@@ -383,6 +378,21 @@ void nextPalette() {
 ////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////
+// Infrared Signal Check
+
+void getSignal() {
+  if (CircuitPlayground.irReceiver.getResults()) {
+    if (CircuitPlayground.irDecoder.decode()) {
+        CircuitPlayground.irDecoder.dumpResults(false);
+    }
+    CircuitPlayground.irReceiver.enableIRIn();
+  }
+}
+
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////
 // Idle & Sleep Functions
 
 void idle() {
@@ -399,12 +409,7 @@ void idle() {
   // Listen for IR signal from eyes -- if resume signal recv'd, set idling = false
   while (idling && ! tired) {
     // Check for IR signals
-    if (CircuitPlayground.irReceiver.getResults()) {
-      if (CircuitPlayground.irDecoder.decode()) { 
-        CircuitPlayground.irDecoder.dumpResults(false); 
-      }
-      CircuitPlayground.irReceiver.enableIRIn();
-    }
+    getSignal();
 
     // Run LEDs
     // Call the current pattern function once, updating the 'leds' array
@@ -427,7 +432,7 @@ void goToSleep() {
 
 void sleep() {
   // This function simply watches for an IR signal from the 'brain' CircuitPlayground before exiting
-  delay(5000);
+  getSignal();
 }
 
 ////////////////////////////////////////////////////////////
