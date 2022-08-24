@@ -332,7 +332,7 @@ void loop() {
   // insert a delay to keep the framerate modest
   FastLED.delay(1000 / FRAMES_PER_SECOND);
 
-  EVERY_N_SECONDS( 60 ) { nextPattern(); }
+  EVERY_N_SECONDS( 90 ) { nextPattern(); }
   EVERY_N_SECONDS( 60 ) { nextPalette(); }
 }
 
@@ -344,7 +344,7 @@ void nextPattern() {
 void nextPalette() {
   currentPaletteIndex = ( currentPaletteIndex + 1 ) % ARRAY_SIZE ( palettes );
   currentPalette = palettes[currentPaletteIndex]; 
-  //Serial.print("Updating colors to ");
+  //Serial.print("Updating colors to ");  
   //Serial.println(currentPaletteIndex);
 }
 
