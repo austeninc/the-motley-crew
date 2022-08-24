@@ -363,19 +363,21 @@ DEFINE_GRADIENT_PALETTE( dreaming_gp ) {
 const CRGBPalette16 palettes[] = {
     RainbowColors_p,  // Rainbow, keep
     bhw1_04_gp,       // Purple orange yellow, GOOD
-    dreaming_gp,      // Purple/pink, faded, nice
     wiki_knutux_gp,   // Orange to green, okay
-    bhw1_33_gp,       // Purple - just purple. Pretty good
-    bhw4_057_gp,      // Pink & red, good
-    Analogous_1_gp,   // Blue / red - stark, decent.
-    bhw1_28_gp,       // Mermaid colors, okay
+    bhw1_33_gp,       // Purple - just purple. Pretty alright. Idle color?
+    bhw4_057_gp,      // Pink & red, good. Love vibes
+    bhw1_28_gp,       // Mermaid colors, good with front-to-back patterns
     Sunset_Real_gp,   // Heat map good
-    purplefly_gp,     // decent, not sure
-    LavaColors_p,     // Lava, hot, pretty good
-    OceanColors_p,    // Sparkly ocean vibes, okay
-    ForestColors_p,   // Green, earthy, okay
-    PartyColors_p,    // Tighter rainbow, pretty good
-    IceColors_p       // Better than CloudColors_p
+    purplefly_gp,     // Pretty good. It's a vibe.
+    LavaColors_p,     // Lava, hot, pretty good. A little too scary maybe. Angry? Bumped?
+    IceColors_p       // Better than CloudColors_p. Keep.
+
+    //// POSSIBLE REJECTS
+    //dreaming_gp,      // Purple/pink, faded, nice??? I kinda hate it tbh
+    //Analogous_1_gp,   // Blue / red - stark, decent. Honestly get rid of in favor of Sunset_Real_gp
+    //OceanColors_p,    // Sparkly ocean vibes, okay. Maybe get rid of it.
+    //ForestColors_p,   // Green, earthy, okay. Maybe eliminate.
+    //PartyColors_p,    // Tighter rainbow, pretty good... maybe prefer normal rainbow on the body.
 };
 
 const uint8_t paletteCount = ARRAY_SIZE(palettes);
