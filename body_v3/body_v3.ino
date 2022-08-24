@@ -84,6 +84,10 @@ void setup() {
   // Init Circuit Playground library & disable onboard speaker (it is shite)
   CircuitPlayground.begin();
   CircuitPlayground.speaker.off();
+
+  // Init the IR receiver
+  CircuitPlayground.irReceiver.enableIRIn(); // Start the receiver
+  Serial.println("Ready to receive IR signals");
   
   // tell FastLED about the LED strip configuration
   Serial.println("Initializing LED objects...");
@@ -333,6 +337,14 @@ CRGBPalette16 currentPalette = palettes[currentPaletteIndex];
 // Begin running code
 
 void loop() {
+
+  // Watch for IR input
+  if (CircuitPlayground.irReceiver.getResults()) {
+    CircuitPlayground.irDecoder.decode();
+    CircuitPlayground.irDecoder.dumpResults(false);
+    CircuitPlayground.irReceiver.enableIRIn();
+  }
+
   // Call the current pattern function once, updating the 'leds' array
   patterns[currentPatternIndex]();
 

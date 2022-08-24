@@ -58,8 +58,8 @@ const char *filename2 = "astralPlanes.wav";
 #define COLOR_ORDER GRB
 
 // Global variables that impact LED behavior
-#define BRIGHTNESS 120          // Brightness
-#define FRAMES_PER_SECOND 120   // Speed
+#define BRIGHTNESS 55          // Brightness
+#define FRAMES_PER_SECOND 120   // Smoothness
 
 // Other setup
 #define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
