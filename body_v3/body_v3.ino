@@ -26,7 +26,7 @@ uint8_t speed = 30;
 //uint8_t autoplaySeconds = 2;
 
 boolean idling = false;
-boolean tired = false;
+boolean tired = true;
 boolean sleeping = false;
 
 ////////////////////////////////////////////////////////////
@@ -132,6 +132,7 @@ const uint8_t patternCount = ARRAY_SIZE(patterns);
 // Define color palette options
 
 uint8_t currentPatternIndex = 0; // Index number of which pattern is current
+uint8_t resumePatternIndex = 0;  // Used to store the currentPatternIndex before switching to idle colors
 
 CRGBPalette16 IceColors_p = CRGBPalette16(CRGB::Black, CRGB::Blue, CRGB::Aqua, CRGB::White);
 
@@ -277,16 +278,16 @@ DEFINE_GRADIENT_PALETTE( dreaming_gp ) {
 
 //typedef void (*SimplePaletteList[])
 const CRGBPalette16 palettes[] = {
-    RainbowColors_p,  // Rainbow, keep
-    bhw1_04_gp,       // Purple orange yellow, GOOD
-    wiki_knutux_gp,   // Orange to green, okay
-    bhw1_33_gp,       // Purple - just purple. Pretty alright. Idle color?
-    bhw4_057_gp,      // Pink & red, good. Love vibes
-    bhw1_28_gp,       // Mermaid colors, good with front-to-back patterns
-    Sunset_Real_gp,   // Heat map good
-    purplefly_gp,     // Pretty good. It's a vibe.
-    LavaColors_p,     // Lava, hot, pretty good. A little too scary maybe. Angry? Bumped?
-    IceColors_p       // Better than CloudColors_p. Keep.
+    RainbowColors_p,  // 0  //Rainbow, keep
+    bhw1_04_gp,       // 1  // Purple orange yellow, GOOD
+    wiki_knutux_gp,   // 2  // Orange to green, okay
+    bhw1_33_gp,       // 3  // Purple - just purple. Pretty alright. Idle color?
+    bhw4_057_gp,      // 4  // Pink & red, good. Love vibes
+    bhw1_28_gp,       // 5  // Mermaid colors, good with front-to-back patterns
+    Sunset_Real_gp,   // 6  // Heat map good
+    purplefly_gp,     // 7  // Pretty good. It's a vibe.
+    LavaColors_p,     // 8  // Lava, hot, pretty good. A little too scary maybe. Angry? Bumped?
+    IceColors_p       // 9  // Better than CloudColors_p. Keep.
 
     //// POSSIBLE REJECTS
     //dreaming_gp,      // Purple/pink, faded, nice??? I kinda hate it tbh
@@ -328,16 +329,36 @@ void loop() {
     CircuitPlayground.irReceiver.enableIRIn();
   }
 
-  // Call the current pattern function once, updating the 'leds' array
-  patterns[currentPatternIndex]();
+  // If we are not idling or tired or sleeping, run normal animations
+  if (! idling && ! tired && ! sleeping) {
+      // Call the current pattern function once, updating the 'leds' array
+    patterns[currentPatternIndex]();
 
-  offset = beat8(speed);
+    offset = beat8(speed);
 
-  // insert a delay to keep the framerate modest
-  FastLED.delay(1000 / FRAMES_PER_SECOND);
+    // insert a delay to keep the framerate modest
+    FastLED.delay(1000 / FRAMES_PER_SECOND);
 
-  EVERY_N_SECONDS( 90 ) { nextPattern(); }
-  EVERY_N_SECONDS( 60 ) { nextPalette(); }
+    EVERY_N_SECONDS( 90 ) { nextPattern(); }
+    EVERY_N_SECONDS( 60 ) { nextPalette(); }
+  }
+  if (idling && ! tired && ! sleeping) {
+    idle();
+  }
+  if (! idling && tired && ! sleeping) {
+    for (uint16_t i = 0; i < 500; i++) {
+      patterns[currentPatternIndex]();
+
+      offset = beat8(speed);
+
+      // insert a delay to keep the framerate modest
+      FastLED.delay(1000 / FRAMES_PER_SECOND);
+    }
+    goToSleep();
+  }
+  if (! idling && ! tired && sleeping) {
+    sleep();
+  }
 }
 
 ////////////////////////////////////////////////////////////
@@ -367,14 +388,46 @@ void nextPalette() {
 void idle() {
   // This function will loop through idle animations when bool `idling` is true
 
+  // Setup the idle animation
+  currentPalette = palettes[3];
+  resumePatternIndex = currentPatternIndex;
+  currentPatternIndex = 3;
+  speed = 15;
+  FastLED.setBrightness(30);
+
+  // Loop until idling = false || tired = true
+  // Listen for IR signal from eyes -- if resume signal recv'd, set idling = false
+  while (idling && ! tired) {
+    // Check for IR signals
+    if (CircuitPlayground.irReceiver.getResults()) {
+      if (CircuitPlayground.irDecoder.decode()) { 
+        CircuitPlayground.irDecoder.dumpResults(false); 
+      }
+      CircuitPlayground.irReceiver.enableIRIn();
+    }
+
+    // Run LEDs
+    // Call the current pattern function once, updating the 'leds' array
+    patterns[currentPatternIndex]();
+
+    offset = beat8(speed);
+
+    // insert a delay to keep the framerate modest
+    FastLED.delay(1000 / FRAMES_PER_SECOND);
+  }
 }
 
 void goToSleep() {
   // This function will fade out all lights after idle() has been running for some time
+  idling = false;
+  FastLED.clear(true);
+  sleeping = true;
+  tired = false;
 }
 
 void sleep() {
   // This function simply watches for an IR signal from the 'brain' CircuitPlayground before exiting
+  delay(5000);
 }
 
 ////////////////////////////////////////////////////////////

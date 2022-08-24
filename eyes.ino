@@ -222,6 +222,7 @@ const uint8_t patternCount = ARRAY_SIZE(patterns);
 // Define color palette options
 
 uint8_t currentPatternIndex = 0; // Index number of which pattern is current
+uint8_t resumePatternIndex = 0;  // Used to store the currentPatternIndex before switching to idle colors
 
 CRGBPalette16 IceColors_p = CRGBPalette16(CRGB::Black, CRGB::Blue, CRGB::Aqua, CRGB::White);
 
@@ -365,16 +366,16 @@ DEFINE_GRADIENT_PALETTE( dreaming_gp ) {
 
 //typedef void (*SimplePaletteList[])
 const CRGBPalette16 palettes[] = {
-    RainbowColors_p,  // Rainbow, keep
-    bhw1_04_gp,       // Purple orange yellow, GOOD
-    wiki_knutux_gp,   // Orange to green, okay
-    bhw1_33_gp,       // Purple - just purple. Pretty alright. Idle color?
-    bhw4_057_gp,      // Pink & red, good. Love vibes
-    bhw1_28_gp,       // Mermaid colors, good with front-to-back patterns
-    Sunset_Real_gp,   // Heat map good
-    purplefly_gp,     // Pretty good. It's a vibe.
-    LavaColors_p,     // Lava, hot, pretty good. A little too scary maybe. Angry? Bumped?
-    IceColors_p       // Better than CloudColors_p. Keep.
+    RainbowColors_p,  // 0  //Rainbow, keep
+    bhw1_04_gp,       // 1  // Purple orange yellow, GOOD
+    wiki_knutux_gp,   // 2  // Orange to green, okay
+    bhw1_33_gp,       // 3  // Purple - just purple. Pretty alright. Idle color?
+    bhw4_057_gp,      // 4  // Pink & red, good. Love vibes
+    bhw1_28_gp,       // 5  // Mermaid colors, good with front-to-back patterns
+    Sunset_Real_gp,   // 6  // Heat map good
+    purplefly_gp,     // 7  // Pretty good. It's a vibe.
+    LavaColors_p,     // 8  // Lava, hot, pretty good. A little too scary maybe. Angry? Bumped?
+    IceColors_p       // 9  // Better than CloudColors_p. Keep.
 
     //// POSSIBLE REJECTS
     //dreaming_gp,      // Purple/pink, faded, nice??? I kinda hate it tbh
