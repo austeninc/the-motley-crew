@@ -49,6 +49,27 @@ const char *filename2 = "astralPlanes.wav";
 ////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////
+// Set up the infrared transmitter
+#define MY_PROTOCOL NECX
+#define MY_BITS 32
+#define IR_0      0xE0E0887736  
+#define IR_1      0xE0E020DF37  
+#define IR_2      0xE0E0A05F38  
+#define IR_3      0xE0E0609F39  
+#define IR_4      0xE0E010EF40  
+#define IR_5      0xE0E0906F41  
+#define IR_6      0xE0E050AF42  
+#define IR_7      0xE0E030CF
+#define IR_8      0xE0E0B04F
+#define IR_9      0xE0E0708F
+#define MY_MUTE   0xE0E0F00F
+#define MY_POWER  0xE0E040BF
+
+
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////
 // Set up the board & LED strips
 
 #define DATA_PIN_L    A1
@@ -371,6 +392,19 @@ CRGBPalette16 currentPalette = palettes[currentPaletteIndex];
 
 void loop()
 {
+
+  // Send IR signal if buttons are pressed
+  if (CircuitPlayground.leftButton()) {
+    Serial.println("Sending IR LEFT_BUTTON");
+    CircuitPlayground.irSend.send(MY_PROTOCOL, MY_MUTE, MY_BITS);
+    //while (CircuitPlayground.leftButton()) {}
+  }
+  if (CircuitPlayground.rightButton()) {
+    Serial.println("Sending IR RIGHT_BUTTON");
+    CircuitPlayground.irSend.send(MY_PROTOCOL, MY_POWER, MY_BITS);
+    //while (CircuitPlayground.rightButton()) {}
+  }
+
   // Call the current pattern function once, updating the 'leds' array
   patterns[currentPatternIndex]();
 

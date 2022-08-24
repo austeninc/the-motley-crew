@@ -339,9 +339,20 @@ CRGBPalette16 currentPalette = palettes[currentPaletteIndex];
 void loop() {
 
   // Watch for IR input
-  if (CircuitPlayground.irReceiver.getResults()) {
-    CircuitPlayground.irDecoder.decode();
+  /*
+  if (CircuitPlayground.irReceiver.getResults() && ! CircuitPlayground.irDecoder.decode()) {
+    CircuitPlayground.irReceiver.enableIRIn();
+  }
+  if (CircuitPlayground.irReceiver.getResults() && CircuitPlayground.irDecoder.decode()) {
     CircuitPlayground.irDecoder.dumpResults(false);
+    CircuitPlayground.irReceiver.enableIRIn();
+  }
+  */
+
+  if (CircuitPlayground.irReceiver.getResults()) {
+    if (CircuitPlayground.irDecoder.decode()) {
+        CircuitPlayground.irDecoder.dumpResults(false);
+    }
     CircuitPlayground.irReceiver.enableIRIn();
   }
 
@@ -365,8 +376,8 @@ void nextPattern() {
 void nextPalette() {
   currentPaletteIndex = ( currentPaletteIndex + 1 ) % ARRAY_SIZE ( palettes );
   currentPalette = palettes[currentPaletteIndex]; 
-  Serial.print("Updating colors to ");
-  Serial.println(currentPaletteIndex);
+  //Serial.print("Updating colors to ");
+  //Serial.println(currentPaletteIndex);
 }
 
 ////////////////////////////////////////////////////////////
