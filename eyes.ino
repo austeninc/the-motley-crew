@@ -186,9 +186,11 @@ typedef void (*SimplePatternList[])();
 SimplePatternList patterns = {
     // 2D map examples:
     clockwisePalette,
+    inwardPalette,
     outwardPalette,
     counterClockwisePalette,
-    inwardPalette
+    inwardPalette,
+    outwardPalette
 //    northPalette,
 //    northEastPalette,
 //    eastPalette,
@@ -357,8 +359,6 @@ DEFINE_GRADIENT_PALETTE( dreaming_gp ) {
   229,   2,  1, 10,
   255,   2,  1, 10};
 
-
-
 //typedef void (*SimplePaletteList[])
 const CRGBPalette16 palettes[] = {
     RainbowColors_p,  // Rainbow, keep
@@ -432,15 +432,15 @@ void loop()
 }
 
 void nextPattern() {
-  Serial.println("Updating pattern.");
+  //Serial.println("Updating pattern.");
   currentPatternIndex = ( currentPatternIndex + 1 ) % ARRAY_SIZE( patterns );
 }
 
 void nextPalette() {
   currentPaletteIndex = ( currentPaletteIndex + 1 ) % ARRAY_SIZE ( palettes );
   currentPalette = palettes[currentPaletteIndex]; 
-  Serial.print("Updating colors to ");
-  Serial.println(currentPaletteIndex);
+  //Serial.print("Updating colors to ");
+  //Serial.println(currentPaletteIndex);
 }
 
 ////////////////////////////////////////////////////////////
