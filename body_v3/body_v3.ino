@@ -24,7 +24,7 @@
 
 // Global variables that impact LED behavior
 #define BRIGHTNESS          120
-#define FRAMES_PER_SECOND  60
+#define FRAMES_PER_SECOND  120
 
 // Other setup
 #define ARRAY_SIZE(A) (sizeof(A) / sizeof((A)[0]))
@@ -57,7 +57,7 @@ CRGB leds[NUM_LEDS];
 void setup() {
   delay(1000); // 1 second delay for recovery
 
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   // Init Circuit Playground library & disable onboard speaker (it is shite)
   CircuitPlayground.begin();
@@ -87,37 +87,36 @@ void setup() {
 
 typedef void (*SimplePatternList[])();
 SimplePatternList patterns = {
-    // 2D map examples:
-    bpm,
-    bpm,
-    bpm,
-    //beatwave,
-    //clockwisePalette,
-    //experimentalPalette,
-    outwardPalette,
-    southEastPalette,
-    westPalette,
-    northEastPalette,
-    juggle,
-    sinelon,
-    eastPalette,
-    outwardPalette,
-    counterClockwisePalette,
-    inwardPalette
-//    northPalette,
-//    southEastPalette,
-//    southPalette,
-//    southWestPalette,
-//    westPalette,
-//    northWestPalette,
+    //// 2D map examples:
+    //northEastPalette, // Cool. Front-to-Back fun design. Beating heart almost
+    eastPalette,      // Great. Standard front-to-back. Could be faster?
+    //southEastPalette, // Mehhhh kind of a weird flashing pattern. Front to back though
+    //southPalette,     // Opposite of north palette... I like it a little better but ugh
+    //westPalette,      // Not bad. Back-to-front kind of deal.
+    //northWestPalette, // A lot like northEast. Kind of flashy but good. Back-to-front.
 
+    //clockwisePalette, // Honestly it's just confusing.
+    //counterClockwisePalette, // Also just confusing
+    //inwardPalette, // Pretty solid. 
+    //outwardPalette, // Not bad, use sparingly.
+
+    //// Others
+    //experimentalPalette, // Good shit. Rename to sometihng like confusedEast
+    
     // standard FastLED demo reel examples:
     //  rainbow,
+
+    //// Not built yet
     //  rainbowWithGlitter,
     //  confetti,
-    //  sinelon,
-    //  juggle,
-    //  bpm
+
+    //// POSSIBLE REJECTS
+    //northPalette,     // weird, no like... COULD BE GOOD IDLE WITH RIGHT COLORS
+    //southWestPalette, // Bad.
+    //beatwave, // I hate it!
+    //juggle, // Honestly... chaos. But do I hate it? Not sure...
+    //sinelon, // Mediochre at best.
+    //bpm, // Chaotic horror
 };
 
 const uint8_t patternCount = ARRAY_SIZE(patterns);
@@ -274,21 +273,23 @@ DEFINE_GRADIENT_PALETTE( dreaming_gp ) {
 
 //typedef void (*SimplePaletteList[])
 const CRGBPalette16 palettes[] = {
-    RainbowColors_p,  // Rainbow, keep
+    //RainbowColors_p,  // Rainbow, keep
     bhw1_04_gp,       // Purple orange yellow, GOOD
-    dreaming_gp,      // Purple/pink, faded, nice
-    wiki_knutux_gp,   // Orange to green, okay
-    bhw1_33_gp,       // Purple - just purple. Pretty good
-    bhw4_057_gp,      // Pink & red, good
-    Analogous_1_gp,   // Blue / red - stark, decent.
-    bhw1_28_gp,       // Mermaid colors, okay
-    Sunset_Real_gp,   // Heat map good
-    purplefly_gp,     // decent, not sure
-    LavaColors_p,     // Lava, hot, pretty good
-    OceanColors_p,    // Sparkly ocean vibes, okay
-    ForestColors_p,   // Green, earthy, okay
-    PartyColors_p,    // Tighter rainbow, pretty good
-    IceColors_p       // Better than CloudColors_p
+    //wiki_knutux_gp,   // Orange to green, okay
+    //bhw1_33_gp,       // Purple - just purple. Pretty alright. Idle color?
+    //bhw4_057_gp,      // Pink & red, good. Love vibes
+    //bhw1_28_gp,       // Mermaid colors, good with front-to-back patterns
+    //Sunset_Real_gp,   // Heat map good
+    //purplefly_gp,     // Pretty good. It's a vibe.
+    //LavaColors_p,     // Lava, hot, pretty good. A little too scary maybe. Angry? Bumped?
+    //IceColors_p       // Better than CloudColors_p. Keep.
+
+    //// POSSIBLE REJECTS
+    //dreaming_gp,      // Purple/pink, faded, nice??? I kinda hate it tbh
+    //Analogous_1_gp,   // Blue / red - stark, decent. Honestly get rid of in favor of Sunset_Real_gp
+    //OceanColors_p,    // Sparkly ocean vibes, okay. Maybe get rid of it.
+    //ForestColors_p,   // Green, earthy, okay. Maybe eliminate.
+    //PartyColors_p,    // Tighter rainbow, pretty good... maybe prefer normal rainbow on the body.
 };
 
 const uint8_t paletteCount = ARRAY_SIZE(palettes);
@@ -312,10 +313,8 @@ void loop() {
   // insert a delay to keep the framerate modest
   FastLED.delay(1000 / FRAMES_PER_SECOND);
 
-  EVERY_N_SECONDS( 20 ) { nextPattern(); }
-  EVERY_N_SECONDS( 20 ) { 
-    nextPalette();
-  }
+  //EVERY_N_SECONDS( 20 ) { nextPattern(); }
+  EVERY_N_SECONDS( 20 ) { nextPalette(); }
 }
 
 void nextPattern() {
@@ -333,6 +332,15 @@ void nextPalette() {
 ////////////////////////////////////////////////////////////
 // This IS the code!
 // 2D map examples:
+
+void northPalette()
+{
+  for (uint16_t i = 0; i < NUM_LEDS; i++)
+  {
+    leds[i] = ColorFromPalette(currentPalette, offset - coordsY[i]);
+  }
+}
+
 void northEastPalette()
 {
   for (uint16_t i = 0; i < NUM_LEDS; i++)
@@ -357,12 +365,19 @@ void southEastPalette()
   }
 }
 
-// EXPERIMENTAL
-void experimentalPalette()
+void southPalette()
 {
   for (uint16_t i = 0; i < NUM_LEDS; i++)
   {
-    leds[i] = ColorFromPalette(currentPalette, offset - coordsX[i] + angles[i]);
+    leds[i] = ColorFromPalette(currentPalette, offset + coordsY[i]);
+  }
+}
+
+void southWestPalette()
+{
+  for (uint16_t i = 0; i < NUM_LEDS; i++)
+  {
+    leds[i] = ColorFromPalette(currentPalette, offset + coordsX[i] + coordsY[i]);
   }
 }
 
@@ -371,6 +386,23 @@ void westPalette()
   for (uint16_t i = 0; i < NUM_LEDS; i++)
   {
     leds[i] = ColorFromPalette(currentPalette, offset + coordsX[i]);
+  }
+}
+
+void northWestPalette()
+{
+  for (uint16_t i = 0; i < NUM_LEDS; i++)
+  {
+    leds[i] = ColorFromPalette(currentPalette, offset + coordsX[i] - coordsY[i]);
+  }
+}
+
+// EXPERIMENTAL
+void experimentalPalette()
+{
+  for (uint16_t i = 0; i < NUM_LEDS; i++)
+  {
+    leds[i] = ColorFromPalette(currentPalette, offset - coordsX[i] + angles[i]);
   }
 }
 
@@ -424,8 +456,9 @@ void inwardPalette()
 void sinelon()
 {
   // a colored dot sweeping back and forth, with fading trails
-  fadeToBlackBy(leds, NUM_LEDS, 20);
-  int pos = beatsin16(13, 0, NUM_LEDS - 1);
+  fadeToBlackBy(leds, NUM_LEDS, 5); // 5 was originally 20
+  //int pos = beatsin16(13, 0, NUM_LEDS - 1);
+  int pos = beatsin16(6, 0, NUM_LEDS - 1);
   leds[pos] += CHSV(offset, 255, 192);
 }
 
@@ -438,7 +471,8 @@ void juggle()
   fadeToBlackBy(leds, NUM_LEDS, 20);
   for (int i = 0; i < dotCount; i++)
   {
-    leds[beatsin16(i + 8, 0, NUM_LEDS - 1)] |= CHSV(i * hues, 200, 255);
+    //leds[beatsin16(i + 8, 0, NUM_LEDS - 1)] |= CHSV(i * hues, 200, 255);
+    leds[beatsin16(i + 3, 0, NUM_LEDS - 1)] |= CHSV(i * hues, 200, 255);
   }
 }
 
