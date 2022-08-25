@@ -568,8 +568,25 @@ void idle() {
       tired = true;
       goToSleep();
     }
+    if ( stopDetected < IDLE_TIMER && stopDetected < SLEEP_TIMER ) {
+      idling = false;
+      tired = false;
+      noSleepForYou();
+    }
   }
 
+}
+
+void noSleepForYou() {
+  // Flash the LEDs once to wake up again
+  Serial.println("Flashing light");
+  for (int i=0; i<10; ++i) {
+      CircuitPlayground.strip.setPixelColor(i, 255, 0, 255);
+  }
+  CircuitPlayground.strip.show();
+  delay(200);
+  CircuitPlayground.strip.clear();
+  CircuitPlayground.strip.show();
 }
 
 void goToSleep() {
@@ -584,13 +601,22 @@ void goToSleep() {
   }
   */
 
- // Flash light to trigger goToSleep in nerves
+ // Flash the LEDs twice to trigger goToSleep in nerves
   Serial.println("Flashing light");
   for (int i=0; i<10; ++i) {
       CircuitPlayground.strip.setPixelColor(i, 255, 0, 255);
   }
   CircuitPlayground.strip.show();
   delay(200);
+  CircuitPlayground.strip.clear();
+  CircuitPlayground.strip.show();
+  delay(250);
+  Serial.println("Flashing light");
+  for (int i=0; i<10; ++i) {
+      CircuitPlayground.strip.setPixelColor(i, 255, 0, 255);
+  }
+  CircuitPlayground.strip.show();
+  delay(400);
   CircuitPlayground.strip.clear();
   CircuitPlayground.strip.show();
 

@@ -497,8 +497,17 @@ void luxDetect() {
       FastLED.delay(1000 / FRAMES_PER_SECOND);
     }*/
 
-    delay(300);
-    goToSleep();
+    delay(450);
+    lux = CircuitPlayground.lightSensor();
+    if (lux > 100 && idling && ! tired && ! sleeping ) { 
+      delay(400);
+      goToSleep();
+    }
+    if (lux < 100 && idling && ! tired && ! sleeping ) { 
+      Serial.println("No sleep for you!");
+      delay(300);
+      wakeUp();
+    }
   }
   if ( lux > 100 && ! idling && ! tired && sleeping ) {
     Serial.println("Time to wake up!");
