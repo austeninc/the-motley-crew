@@ -42,9 +42,13 @@ SamdAudio AudioPlayer;
 const unsigned int sampleRate = 32000; //hz
 
 // Assign file names to variables for playback
-const char *filename0 = "fackinGooglyEyes-8bit.wav";
-const char *filename1 = "oiClarence.wav";
-const char *filename2 = "astralPlanes.wav";
+const char *filename0 = "fackinGooglyEyes-8bit.wav";  // 0
+const char *filename1 = "oiClarence.wav";             // 1
+const char *filename2 = "astralPlanes.wav";           // 2
+
+// Create variable to represent file indices (for wakeUp function)
+int fileSelect = 1;
+
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 
@@ -569,9 +573,13 @@ void sleep() {
 }
 
 void wakeUp() {
-  // This function will play a random sound clip and then send an IR signal to the 'nerves' to resume its normal loop
+  // This function will play a random sound clip and then send a light signal to the 'nerves' to resume its normal loop
 
-  // Play sound?
+  // Play sound by calling soundClip() if we've been sleeping longer than 30 minutes, otherwise do nothing
+  if ( wakingUp > 1800 ) {
+    soundClip();
+    wakingUp = 0;
+  }
 
   // Flash light to trigger idle mode in nerves
   Serial.println("Flashing light");
@@ -599,6 +607,39 @@ void wakeUp() {
   currentPalette = palettes[currentPaletteIndex]; 
   speed = 30;
   FastLED.setBrightness(BRIGHTNESS);
+}
+
+void soundClip() {
+  if ( fileSelect = 0 ) {
+    AudioPlayer.play(filename0, 0);
+    Serial.println("Playing fackinGooglyEyes-8bit.wav");
+    delay(1845);
+    AudioPlayer.stopChannel(0);
+  }
+  if ( fileSelect = 1 ) {
+    AudioPlayer.play(filename1, 0);
+    Serial.println("Playing oiClarence.wav");
+    delay(2000);
+    AudioPlayer.stopChannel(0);
+  }
+  if ( fileSelect = 2 ) {
+    AudioPlayer.play(filename2, 0);
+    Serial.println("astralPlanes.wav");
+    delay(5270);
+    AudioPlayer.stopChannel(0);
+  }
+
+  if ( fileSelect = 0 ) { 
+    fileSelect = 1; 
+  }
+  else if ( fileSelect = 1 )
+  {
+    fileSelect = 2;
+  }
+  else if ( fileSelect = 2 )
+  {
+    fileSelect = 0;
+  }
 }
 
 ////////////////////////////////////////////////////////////
