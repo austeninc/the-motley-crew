@@ -7,6 +7,7 @@
 
 ////////////////////////////////////////////////////////////
 // Set up the infrared codes
+/* Removing IR code for now...
 #define MY_PROTOCOL NECX
 #define MY_BITS 32
 #define IR_0      0xE0E0887736  
@@ -23,6 +24,10 @@
 #define MY_POWER  0xE0E040BF
 
 uint32_t decodedValue = 0;
+*/
+
+// Light detection though?
+uint8_t lux;
 
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
@@ -362,10 +367,10 @@ void loop() {
     EVERY_N_SECONDS( 60 ) { nextPalette(); }
     EVERY_N_SECONDS( 5 )  { Serial.println("Still awake."); }
   }
-  if (idling && ! tired && ! sleeping) {
+  /*if (idling && ! tired && ! sleeping) {
     idle();
-  }
-  if (! idling && tired && ! sleeping) {
+  }*/
+  /*if (! idling && tired && ! sleeping) {
     for (uint16_t i = 0; i < 500; i++) {
       patterns[currentPatternIndex]();
 
@@ -375,12 +380,13 @@ void loop() {
       FastLED.delay(1000 / FRAMES_PER_SECOND);
     }
     goToSleep();
-  }
-  if (! idling && ! tired && sleeping) {
-    sleep();
-  }
+  } */
+  //if (! idling && ! tired && sleeping) {
+  //  sleep();
+  //}
 
-  getSignal();
+  luxDetect();
+  //getSignal();
 }
 
 ////////////////////////////////////////////////////////////
@@ -406,7 +412,7 @@ void nextPalette() {
 
 ////////////////////////////////////////////////////////////
 // Infrared Signal Check
-
+/* Removing IR code for now...
 void getSignal() {
   if ( CircuitPlayground.irReceiver.getResults() ) {
     CircuitPlayground.irDecoder.decode();
@@ -433,7 +439,6 @@ void getSignal() {
         decodedValue = 0;
         break;
       case IR_2:  // If IR_2 is decoded, wake up
-      //case 0xE0E0A05F38:  // If IR_2 is decoded, wake up
         CircuitPlayground.irDecoder.dumpResults(false);
         Serial.println("Wake up signal received.");
         wakeUp();
@@ -443,6 +448,10 @@ void getSignal() {
         CircuitPlayground.irReceiver.enableIRIn();
         decodedValue = 0;
         break;
+      //case IR_3:  // If IR_3 is decoded, go to sleep
+        //CircuitPlayground.irDecoder.dumpResults(false);
+        //Serial.println("Sleep signal received.");
+
       default:    // If nothing is decoded, move on
         if ( CircuitPlayground.irDecoder.decode() ) {
           CircuitPlayground.irDecoder.dumpResults(false);
@@ -455,6 +464,52 @@ void getSignal() {
   }
 
 }
+*/
+
+// Light detection?
+
+void luxDetect() {
+  lux = CircuitPlayground.lightSensor();
+  //Serial.print("lux = ");
+  //Serial.println(lux);
+
+  if ( lux > 100 && ! idling && ! tired && ! sleeping ) {
+    Serial.println("Starting idle");
+    //idling = true;
+    //tired = false;
+    //sleeping = false;
+    delay(200);
+    idle();
+  }
+  if ( lux > 100 && idling && ! tired && ! sleeping ) {
+    //Serial.println("");
+    //idling = false;
+    //tired = true;
+    //sleeping = false;
+
+    /*
+    for (uint16_t i = 0; i < 500; i++) {
+      patterns[currentPatternIndex]();
+
+      offset = beat8(speed);
+
+      // insert a delay to keep the framerate modest
+      FastLED.delay(1000 / FRAMES_PER_SECOND);
+    }*/
+
+    delay(300);
+    goToSleep();
+  }
+  if ( lux > 100 && ! idling && ! tired && sleeping ) {
+    Serial.println("Time to wake up!");
+    delay(300);
+    wakeUp();
+    //idling = false;
+    //tired = false;
+    //sleeping = false;
+  }
+  
+}
 
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
@@ -464,6 +519,8 @@ void getSignal() {
 
 void idle() {
   // This function will loop through idle animations when bool `idling` is true
+
+  idling = true;
 
   Serial.println("Starting idle.");
   Serial.print("Palette before idle: ");
@@ -480,13 +537,16 @@ void idle() {
   speed = 15;
   FastLED.setBrightness(30);
 
-  decodedValue = 0;
+  //decodedValue = 0;
 
   // Loop until idling = false || tired = true
   // Listen for IR signal from eyes -- if resume signal recv'd, set idling = false
   while (idling && ! tired) {
     // Check for IR signals
-    getSignal();
+    //getSignal();
+
+    // Check for light signal
+    luxDetect();
 
     // Run LEDs
     // Call the current pattern function once, updating the 'leds' array
@@ -504,8 +564,10 @@ void goToSleep() {
   Serial.println("Going to sleep");
   idling = false;
   FastLED.clear(true);
+  FastLED.setBrightness(0);
   sleeping = true;
   tired = false;
+  sleep();
 }
 
 void sleep() {
@@ -515,7 +577,13 @@ void sleep() {
   //currentPaletteIndex = resumePaletteIndex;
   //speed = 30;
   //FastLED.setBrightness(BRIGHTNESS);
-  getSignal();
+  //getSignal();
+
+  FastLED.clear(true);
+
+  delay(20);
+
+  luxDetect();
 }
 
 void wakeUp() {
@@ -527,6 +595,8 @@ void wakeUp() {
   Serial.print(resumePaletteIndex);
   Serial.print(". Resuming pattern: ");
   Serial.println(resumePatternIndex);
+
+  delay(50);
 
   currentPatternIndex = resumePatternIndex;
   currentPaletteIndex = resumePaletteIndex;
