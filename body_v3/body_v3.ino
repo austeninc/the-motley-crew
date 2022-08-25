@@ -6,27 +6,8 @@
 ////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////
-// Set up the infrared codes
-/* Removing IR code for now...
-#define MY_PROTOCOL NECX
-#define MY_BITS 32
-#define IR_0      0xE0E0887736  
-#define IR_1      0xE0E020DF37  
-#define IR_2      0xE0E0A05F38  
-#define IR_3      0xE0E0609F39  
-#define IR_4      0xE0E010EF40  
-#define IR_5      0xE0E0906F41  
-#define IR_6      0xE0E050AF42  
-#define IR_7      0xE0E030CF
-#define IR_8      0xE0E0B04F
-#define IR_9      0xE0E0708F
-#define MY_MUTE   0xE0E0F00F
-#define MY_POWER  0xE0E040BF
+// Set up variable for light detection
 
-uint32_t decodedValue = 0;
-*/
-
-// Light detection though?
 uint8_t lux;
 
 ////////////////////////////////////////////////////////////
@@ -48,9 +29,6 @@ uint8_t lux;
 
 uint8_t offset = 0; // rotating "base color" used by many of the patterns
 uint8_t speed = 30;
-
-//boolean autoplay = true;
-//uint8_t autoplaySeconds = 2;
 
 boolean idling = false;
 boolean tired = false;
@@ -83,10 +61,6 @@ void setup() {
   // Init Circuit Playground library & disable onboard speaker (it is shite)
   CircuitPlayground.begin();
   CircuitPlayground.speaker.off();
-
-  // Init the IR receiver
-  CircuitPlayground.irReceiver.enableIRIn(); // Start the receiver
-  Serial.println("Ready to receive IR signals");
   
   // tell FastLED about the LED strip configuration
   Serial.println("Initializing LED objects...");
@@ -339,20 +313,6 @@ uint8_t resumePaletteIndex = 0;
 // Begin running code
 
 void loop() {
-
-  // Watch for IR input
-  /*
-  if (CircuitPlayground.irReceiver.getResults() && ! CircuitPlayground.irDecoder.decode()) {
-    CircuitPlayground.irReceiver.enableIRIn();
-  }
-  if (CircuitPlayground.irReceiver.getResults() && CircuitPlayground.irDecoder.decode()) {
-    CircuitPlayground.irDecoder.dumpResults(false);
-    CircuitPlayground.irReceiver.enableIRIn();
-  }
-  */
-
-  
-
   // If we are not idling or tired or sleeping, run normal animations
   if (! idling && ! tired && ! sleeping) {
       // Call the current pattern function once, updating the 'leds' array
@@ -367,26 +327,8 @@ void loop() {
     EVERY_N_SECONDS( 60 ) { nextPalette(); }
     EVERY_N_SECONDS( 5 )  { Serial.println("Still awake."); }
   }
-  /*if (idling && ! tired && ! sleeping) {
-    idle();
-  }*/
-  /*if (! idling && tired && ! sleeping) {
-    for (uint16_t i = 0; i < 500; i++) {
-      patterns[currentPatternIndex]();
 
-      offset = beat8(speed);
-
-      // insert a delay to keep the framerate modest
-      FastLED.delay(1000 / FRAMES_PER_SECOND);
-    }
-    goToSleep();
-  } */
-  //if (! idling && ! tired && sleeping) {
-  //  sleep();
-  //}
-
-  luxDetect();
-  //getSignal();
+  luxDetect(); // Checks for light signals from brain
 }
 
 ////////////////////////////////////////////////////////////
@@ -403,70 +345,13 @@ void nextPattern() {
 void nextPalette() {
   currentPaletteIndex = ( currentPaletteIndex + 1 ) % ARRAY_SIZE ( palettes );
   currentPalette = palettes[currentPaletteIndex]; 
-  //Serial.print("Updating colors to ");  
-  //Serial.println(currentPaletteIndex);
 }
 
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////
-// Infrared Signal Check
-/* Removing IR code for now...
-void getSignal() {
-  if ( CircuitPlayground.irReceiver.getResults() ) {
-    CircuitPlayground.irDecoder.decode();
-    decodedValue = CircuitPlayground.irDecoder.value;
-    //decodedValue = CircuitPlayground.irDecoder.value;
-    //CircuitPlayground.irDecoder.dumpResults(false);
-    switch ( decodedValue ) {
-      case IR_0:  // If IR_0 is decoded, enter idling mode
-        CircuitPlayground.irDecoder.dumpResults(false);
-        Serial.println("Idle signal received.");
-        idling = true;
-        tired = false;
-        sleeping = false;
-        CircuitPlayground.irReceiver.enableIRIn();
-        decodedValue = 0;
-        break;
-      case IR_1:  // If IR_1 is decoded, trigger go to sleep
-        CircuitPlayground.irDecoder.dumpResults(false);
-        Serial.println("Go to sleep signal received.");
-        idling = false;
-        tired = true;
-        sleeping = false;
-        CircuitPlayground.irReceiver.enableIRIn();
-        decodedValue = 0;
-        break;
-      case IR_2:  // If IR_2 is decoded, wake up
-        CircuitPlayground.irDecoder.dumpResults(false);
-        Serial.println("Wake up signal received.");
-        wakeUp();
-        //idling = false;
-        //tired = false;
-        //sleeping = false;
-        CircuitPlayground.irReceiver.enableIRIn();
-        decodedValue = 0;
-        break;
-      //case IR_3:  // If IR_3 is decoded, go to sleep
-        //CircuitPlayground.irDecoder.dumpResults(false);
-        //Serial.println("Sleep signal received.");
-
-      default:    // If nothing is decoded, move on
-        if ( CircuitPlayground.irDecoder.decode() ) {
-          CircuitPlayground.irDecoder.dumpResults(false);
-          decodedValue = 0;
-        }
-        //EVERY_N_SECONDS(5) { Serial.println("No signals match last 5 seconds."); }
-        CircuitPlayground.irReceiver.enableIRIn();
-        break;
-    }
-  }
-
-}
-*/
-
-// Light detection?
+// Light Signal Detection
 
 void luxDetect() {
   lux = CircuitPlayground.lightSensor();
@@ -475,47 +360,32 @@ void luxDetect() {
 
   if ( lux > 100 && ! idling && ! tired && ! sleeping ) {
     Serial.println("Starting idle");
-    //idling = true;
-    //tired = false;
-    //sleeping = false;
     delay(200);
     idle();
   }
+
   if ( lux > 100 && idling && ! tired && ! sleeping ) {
-    //Serial.println("");
-    //idling = false;
-    //tired = true;
-    //sleeping = false;
-
-    /*
-    for (uint16_t i = 0; i < 500; i++) {
-      patterns[currentPatternIndex]();
-
-      offset = beat8(speed);
-
-      // insert a delay to keep the framerate modest
-      FastLED.delay(1000 / FRAMES_PER_SECOND);
-    }*/
-
     delay(450);
     lux = CircuitPlayground.lightSensor();
+
+    // Check for single pulse of light or two pulses
     if (lux > 100 && idling && ! tired && ! sleeping ) { 
+      // If a second pulse is detected, go to sleep
       delay(400);
       goToSleep();
     }
     if (lux < 100 && idling && ! tired && ! sleeping ) { 
+      // If only one pulse was detected, wake from idle state
       Serial.println("No sleep for you!");
       delay(300);
       wakeUp();
     }
   }
+
   if ( lux > 100 && ! idling && ! tired && sleeping ) {
     Serial.println("Time to wake up!");
     delay(300);
     wakeUp();
-    //idling = false;
-    //tired = false;
-    //sleeping = false;
   }
   
 }
@@ -546,14 +416,9 @@ void idle() {
   speed = 15;
   FastLED.setBrightness(30);
 
-  //decodedValue = 0;
-
   // Loop until idling = false || tired = true
-  // Listen for IR signal from eyes -- if resume signal recv'd, set idling = false
+  // Check for light signal from eyes. If light detected, take action in luxDetect()
   while (idling && ! tired) {
-    // Check for IR signals
-    //getSignal();
-
     // Check for light signal
     luxDetect();
 
@@ -581,17 +446,9 @@ void goToSleep() {
 
 void sleep() {
   EVERY_N_SECONDS( 5 )  { Serial.println("Still sleeping."); }
-  // This function resets the idle variables and then simply watches for an IR signal from the 'brain' CircuitPlayground before exiting
-  //currentPatternIndex = resumePatternIndex;
-  //currentPaletteIndex = resumePaletteIndex;
-  //speed = 30;
-  //FastLED.setBrightness(BRIGHTNESS);
-  //getSignal();
-
+  // This function simply watches for a Light signal signal from the 'brain' CircuitPlayground
   FastLED.clear(true);
-
   delay(20);
-
   luxDetect();
 }
 
@@ -797,17 +654,3 @@ void beatwave() {
   }
   
 } // beatwave()
-
-//////////////////////////////////////////////
-// Possible color blending feature?
-// See https://github.com/atuline/FastLED-Demos/blob/master/beatwave/beatwave.ino
-
-
-//EVERY_N_MILLISECONDS(100) {
-//    uint8_t maxChanges = 24; 
-//    nblendPaletteTowardPalette(currentPalette, targetPalette, maxChanges);   // AWESOME palette blending capability.
-//  }
-
-//  EVERY_N_SECONDS(5) {                                        // Change the target palette to a random one every 5 seconds.
-//    targetPalette = CRGBPalette16(CHSV(random8(), 255, random8(128,255)), CHSV(random8(), 255, random8(128,255)), CHSV(random8(), 192, random8(128,255)), CHSV(random8(), 255, random8(128,255)));
-//  }

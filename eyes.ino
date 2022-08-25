@@ -49,28 +49,6 @@ const char *filename2 = "astralPlanes.wav";
 ////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////
-// Set up the infrared transmitter
-/* Removing IR code for now
-#define MY_PROTOCOL NECX
-#define MY_BITS 32
-#define IR_0      0xE0E0887736  
-#define IR_1      0xE0E020DF37  
-#define IR_2      0xE0E0A05F38  
-#define IR_3      0xE0E0609F39  
-#define IR_4      0xE0E010EF40  
-#define IR_5      0xE0E0906F41  
-#define IR_6      0xE0E050AF42  
-#define IR_7      0xE0E030CF
-#define IR_8      0xE0E0B04F
-#define IR_9      0xE0E0708F
-#define MY_MUTE   0xE0E0F00F
-#define MY_POWER  0xE0E040BF
-*/
-
-////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////
 // Set up the board & LED strips
 
 #define DATA_PIN_L    A1
@@ -88,9 +66,6 @@ const char *filename2 = "astralPlanes.wav";
 
 uint8_t offset = 0; // rotating "base color" used by many of the patterns
 uint8_t speed = 30;
-
-//boolean autoplay = true;
-//uint8_t autoplaySeconds = 2;
 
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
@@ -417,39 +392,6 @@ uint8_t resumePaletteIndex = 0;
 
 void loop()
 {
-
-  // Send IR signal if buttons are pressed
-  /* Removing IR code for now
-  if (CircuitPlayground.leftButton()) {
-    Serial.println("Sending IR_0 to trigger idle");
-    CircuitPlayground.irSend.send(MY_PROTOCOL, IR_0, MY_BITS);
-    CircuitPlayground.irSend.send(MY_PROTOCOL, IR_0, MY_BITS);
-    CircuitPlayground.irSend.send(MY_PROTOCOL, IR_0, MY_BITS);
-    CircuitPlayground.irSend.send(MY_PROTOCOL, IR_0, MY_BITS);
-    CircuitPlayground.irSend.send(MY_PROTOCOL, IR_0, MY_BITS);
-    CircuitPlayground.irSend.send(MY_PROTOCOL, IR_0, MY_BITS);
-    CircuitPlayground.irSend.send(MY_PROTOCOL, IR_0, MY_BITS);
-    CircuitPlayground.irSend.send(MY_PROTOCOL, IR_0, MY_BITS);
-    CircuitPlayground.irSend.send(MY_PROTOCOL, IR_0, MY_BITS);
-    CircuitPlayground.irSend.send(MY_PROTOCOL, IR_0, MY_BITS);
-    CircuitPlayground.irSend.send(MY_PROTOCOL, IR_0, MY_BITS);
-  }
-  if (CircuitPlayground.rightButton()) {
-    Serial.println("Sending IR_2 to trigger wake up");
-    CircuitPlayground.irSend.send(MY_PROTOCOL, IR_2, MY_BITS);
-    CircuitPlayground.irSend.send(MY_PROTOCOL, IR_2, MY_BITS);
-    CircuitPlayground.irSend.send(MY_PROTOCOL, IR_2, MY_BITS);
-    CircuitPlayground.irSend.send(MY_PROTOCOL, IR_2, MY_BITS);
-    CircuitPlayground.irSend.send(MY_PROTOCOL, IR_2, MY_BITS);
-    CircuitPlayground.irSend.send(MY_PROTOCOL, IR_2, MY_BITS);
-    CircuitPlayground.irSend.send(MY_PROTOCOL, IR_2, MY_BITS);
-    CircuitPlayground.irSend.send(MY_PROTOCOL, IR_2, MY_BITS);
-    CircuitPlayground.irSend.send(MY_PROTOCOL, IR_2, MY_BITS);
-    CircuitPlayground.irSend.send(MY_PROTOCOL, IR_2, MY_BITS);
-    CircuitPlayground.irSend.send(MY_PROTOCOL, IR_2, MY_BITS);
-  }
-  */
-
   if ( stopDetected < IDLE_TIMER && stopDetected < SLEEP_TIMER ) {
 
     if ( wakingUp > IDLE_TIMER || wakingUp > SLEEP_TIMER ) {
@@ -466,15 +408,9 @@ void loop()
 
   }
   if ( stopDetected > IDLE_TIMER && stopDetected < SLEEP_TIMER ) {
-    //idling = true;
-    //tired = false;
-    //sleeping = false;
     idle();
   }
   if ( ! idling && tired && ! sleeping ) {
-    //idling = false;
-    //tired = true;
-    //sleeping = false;
     goToSleep();
   }
   if ( ! idling && ! tired && sleeping ) {
@@ -494,15 +430,12 @@ void loop()
 // Pattern/Color Changing Functions
 
 void nextPattern() {
-  //Serial.println("Updating pattern.");
   currentPatternIndex = ( currentPatternIndex + 1 ) % ARRAY_SIZE( patterns );
 }
 
 void nextPalette() {
   currentPaletteIndex = ( currentPaletteIndex + 1 ) % ARRAY_SIZE ( palettes );
   currentPalette = palettes[currentPaletteIndex]; 
-  //Serial.print("Updating colors to ");
-  //Serial.println(currentPaletteIndex);
 }
 
 ////////////////////////////////////////////////////////////
@@ -512,19 +445,8 @@ void nextPalette() {
 // Idle & Sleep Functions
 
 void idle() {
-  // This function will send an IR signal to the 'spine' CircuitPlayground to have it begin its idle loop.
+  // This function will send a light pulse to the 'nerves' CircuitPlayground to have it begin its idle loop.
   // Then this function will loop through the eyes idle animations when bool `idling` is true
-
-  // Send signal to idle
-  //Serial.println("Sending IR_0 to trigger idle");
-
-  /* REMOVING IR CODE
-  for ( int r = 0; r < 50; r ++ ) {
-    Serial.println("Sending IR_0 to trigger idle");
-    CircuitPlayground.irSend.send(MY_PROTOCOL, IR_0, MY_BITS);
-    delay(3);
-  }
-  */
 
   idling = true;
   tired = false;
@@ -550,7 +472,8 @@ void idle() {
   FastLED.setBrightness(30);
 
   // Loop until idling = false || tired = true
-  // Listen for IR signal from eyes -- if resume signal recv'd, set idling = false
+  // Check for motion -- if detected, trigger wake up with noSleepForYou
+  // If motion is not detected, goToSleep
   while (idling && ! tired) {
     // Run LEDs
     // Call the current pattern function once, updating the 'leds' array
@@ -587,21 +510,29 @@ void noSleepForYou() {
   delay(200);
   CircuitPlayground.strip.clear();
   CircuitPlayground.strip.show();
+
+  // Do local wake up things
+  wakingUp = 0;
+  idling = false;
+  tired = false;
+  sleeping = false;
+  Serial.println("Waking up.");
+  Serial.print("Resuming palette: ");
+  Serial.print(resumePaletteIndex);
+  Serial.print(". Resuming pattern: ");
+  Serial.println(resumePatternIndex);
+
+  currentPatternIndex = resumePatternIndex;
+  currentPaletteIndex = resumePaletteIndex;
+  currentPalette = palettes[currentPaletteIndex]; 
+  speed = 30;
+  FastLED.setBrightness(BRIGHTNESS);
 }
 
 void goToSleep() {
   // This function will fade out all lights after idle() has been running for some time
 
-  /* REMOVE IR CODE
-  // Send signal to go to sleep
-  for ( int r = 0; r < 50; r ++ ) {
-    Serial.println("Sending IR_1 to trigger goToSleep");
-    CircuitPlayground.irSend.send(MY_PROTOCOL, IR_1, MY_BITS);
-    delay(3);
-  }
-  */
-
- // Flash the LEDs twice to trigger goToSleep in nerves
+  // Flash the LEDs twice to trigger goToSleep in nerves
   Serial.println("Flashing light");
   for (int i=0; i<10; ++i) {
       CircuitPlayground.strip.setPixelColor(i, 255, 0, 255);
@@ -632,11 +563,6 @@ void goToSleep() {
 void sleep() {
   // This function checks for motion. If motion is detected, call wakeUp()
 
-  // Send signal to sleep
-
-  //Serial.println("Sending IR_3 to trigger sleep mode");
-  //CircuitPlayground.irSend.send(MY_PROTOCOL, IR_3, MY_BITS);
-
   if ( stopDetected < IDLE_TIMER && stopDetected < SLEEP_TIMER ) {
     wakeUp();
   }
@@ -646,15 +572,6 @@ void wakeUp() {
   // This function will play a random sound clip and then send an IR signal to the 'nerves' to resume its normal loop
 
   // Play sound?
-
-  /* REMOVE IR CODE
-  // Send signal to wake up
-  for ( int r = 0; r < 50; r ++ ) {
-    Serial.println("Sending IR_2 to trigger wake up");
-    CircuitPlayground.irSend.send(MY_PROTOCOL, IR_2, MY_BITS);
-    delay(3);
-  }
-  */
 
   // Flash light to trigger idle mode in nerves
   Serial.println("Flashing light");
