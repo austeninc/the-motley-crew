@@ -134,7 +134,7 @@ void setup()
   // Init Circuit Playground library & disable onboard speaker (it is shite)
   CircuitPlayground.begin();
   CircuitPlayground.speaker.off();
-  CircuitPlayground.strip.setBrightness(120);
+  //CircuitPlayground.strip.setBrightness(120); // Remove flash
 
   // Initialize flash library and check its chip ID.
   if (!flash.begin()) {
@@ -455,6 +455,7 @@ void idle() {
   idling = true;
   tired = false;
 
+  /*
   // Flash light to trigger idle mode in nerves
   Serial.println("Flashing light");
   for (int i=0; i<10; ++i) {
@@ -464,7 +465,7 @@ void idle() {
   delay(100);
   CircuitPlayground.strip.clear();
   CircuitPlayground.strip.show();
-
+  */
   // Store the previous state
   resumePaletteIndex = currentPaletteIndex;
   resumePatternIndex = currentPatternIndex;
@@ -505,6 +506,7 @@ void idle() {
 }
 
 void noSleepForYou() {
+  /*
   // Flash the LEDs once to wake up again
   Serial.println("Flashing light");
   for (int i=0; i<10; ++i) {
@@ -514,6 +516,7 @@ void noSleepForYou() {
   delay(200);
   CircuitPlayground.strip.clear();
   CircuitPlayground.strip.show();
+  */
 
   // Do local wake up things
   wakingUp = 0;
@@ -536,6 +539,7 @@ void noSleepForYou() {
 void goToSleep() {
   // This function will fade out all lights after idle() has been running for some time
 
+  /*
   // Flash the LEDs twice to trigger goToSleep in nerves
   Serial.println("Flashing light");
   for (int i=0; i<10; ++i) {
@@ -554,6 +558,7 @@ void goToSleep() {
   delay(400);
   CircuitPlayground.strip.clear();
   CircuitPlayground.strip.show();
+  */
 
   // Do sleepy things
 
@@ -582,6 +587,7 @@ void wakeUp() {
   }
 
   // Flash light to trigger idle mode in nerves
+  /*
   Serial.println("Flashing light");
   for (int i=0; i<10; ++i) {
       CircuitPlayground.strip.setPixelColor(i, 255, 0, 255);
@@ -590,7 +596,8 @@ void wakeUp() {
   delay(200);
   CircuitPlayground.strip.clear();
   CircuitPlayground.strip.show();
-  
+  */
+
   // Do local wake up things
   wakingUp = 0;
   idling = false;
