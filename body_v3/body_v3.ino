@@ -328,7 +328,7 @@ void loop() {
     EVERY_N_SECONDS( 5 )  { Serial.println("Still awake."); }
   }
 
-  luxDetect(); // Checks for light signals from brain
+  //luxDetect(); // Checks for light signals from brain
 }
 
 ////////////////////////////////////////////////////////////
@@ -352,7 +352,7 @@ void nextPalette() {
 
 ////////////////////////////////////////////////////////////
 // Light Signal Detection
-
+/*
 void luxDetect() {
   lux = CircuitPlayground.lightSensor();
   //Serial.print("lux = ");
@@ -389,7 +389,7 @@ void luxDetect() {
   }
   
 }
-
+*/
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 
@@ -420,7 +420,7 @@ void idle() {
   // Check for light signal from eyes. If light detected, take action in luxDetect()
   while (idling && ! tired) {
     // Check for light signal
-    luxDetect();
+    //luxDetect();
 
     // Run LEDs
     // Call the current pattern function once, updating the 'leds' array
@@ -449,7 +449,7 @@ void sleep() {
   // This function simply watches for a Light signal signal from the 'brain' CircuitPlayground
   FastLED.clear(true);
   delay(20);
-  luxDetect();
+  //luxDetect();
 }
 
 void wakeUp() {
