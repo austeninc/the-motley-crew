@@ -31,7 +31,7 @@ uint8_t speed = 30;
 float X, Y, Z;
 #define MOVE_THRESHOLD 3
 int stopDetected = 0;
-#define IDLE_TIMER  5
+#define IDLE_TIMER  180
 #define SLEEP_TIMER 600
 
 int wakingUp = 0;
