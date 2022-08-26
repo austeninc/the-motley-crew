@@ -8,7 +8,7 @@
 ////////////////////////////////////////////////////////////
 // Set up variable for light detection
 
-uint8_t lux;
+//uint8_t lux;
 
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
@@ -47,6 +47,12 @@ int wakingUp = 0;
 boolean idling = false;
 boolean tired = false;
 boolean sleeping = false;
+
+// Create variable to represent file indices (used to add wakeUp delay to compensate for sound clip played from eyes)
+int fileSelect = 1;
+
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////
 // Set up the bike matrix
@@ -325,8 +331,14 @@ uint8_t resumePaletteIndex = 0;
 
 void loop() {
   // If we are not idling or tired or sleeping, run normal animations
-  if (! idling && ! tired && ! sleeping) {
-      // Call the current pattern function once, updating the 'leds' array
+  //if (! idling && ! tired && ! sleeping) {
+  if ( stopDetected < IDLE_TIMER && stopDetected < SLEEP_TIMER ) {
+
+    if ( wakingUp > IDLE_TIMER || wakingUp > SLEEP_TIMER ) {
+      wakeUp();
+    }
+
+    // Call the current pattern function once, updating the 'leds' array
     patterns[currentPatternIndex]();
 
     offset = beat8(speed);
@@ -336,8 +348,21 @@ void loop() {
 
     EVERY_N_SECONDS( 90 ) { nextPattern(); }
     EVERY_N_SECONDS( 60 ) { nextPalette(); }
-    EVERY_N_SECONDS( 5 )  { Serial.println("Still awake."); }
   }
+  if ( stopDetected > IDLE_TIMER && stopDetected < SLEEP_TIMER ) {
+    idle();
+  }
+  if ( ! idling && tired && ! sleeping ) {
+    goToSleep();
+  }
+  if ( ! idling && ! tired && sleeping ) {
+    sleep();
+  }
+  
+  EVERY_N_SECONDS( 1 ) { checkMotion(); }
+
+  EVERY_N_SECONDS( 90 ) { nextPattern(); }
+  EVERY_N_SECONDS( 60 ) { nextPalette(); }
 
   //luxDetect(); // Checks for light signals from brain
 }
@@ -411,12 +436,7 @@ void idle() {
   // This function will loop through idle animations when bool `idling` is true
 
   idling = true;
-
-  Serial.println("Starting idle.");
-  Serial.print("Palette before idle: ");
-  Serial.print(currentPaletteIndex);
-  Serial.print(". Pattern before idle: ");
-  Serial.println(currentPatternIndex);
+  tired = false;
 
   resumePaletteIndex = currentPaletteIndex;
   resumePatternIndex = currentPatternIndex;
@@ -441,29 +461,37 @@ void idle() {
 
     // insert a delay to keep the framerate modest
     FastLED.delay(1000 / FRAMES_PER_SECOND);
+
+    EVERY_N_SECONDS( 1 ) { checkMotion(); }
+
+    if ( stopDetected > IDLE_TIMER && stopDetected > SLEEP_TIMER ) {
+      idling = false;
+      tired = true;
+      goToSleep();
+    }
+    if ( stopDetected < IDLE_TIMER && stopDetected < SLEEP_TIMER ) {
+      idling = false;
+      tired = false;
+      noSleepForYou();
+    }
   }
 }
 
-void goToSleep() {
-  // This function will fade out all lights after idle() has been running for some time
-  Serial.println("Going to sleep");
-  idling = false;
-  FastLED.clear(true);
-  FastLED.setBrightness(0);
-  sleeping = true;
-  tired = false;
-  sleep();
-}
+void noSleepForYou() {
+  /*
+  // Flash the LEDs once to wake up again
+  Serial.println("Flashing light");
+  for (int i=0; i<10; ++i) {
+      CircuitPlayground.strip.setPixelColor(i, 255, 0, 255);
+  }
+  CircuitPlayground.strip.show();
+  delay(200);
+  CircuitPlayground.strip.clear();
+  CircuitPlayground.strip.show();
+  */
 
-void sleep() {
-  EVERY_N_SECONDS( 5 )  { Serial.println("Still sleeping."); }
-  // This function simply watches for a Light signal signal from the 'brain' CircuitPlayground
-  FastLED.clear(true);
-  delay(20);
-  //luxDetect();
-}
-
-void wakeUp() {
+  // Do local wake up things
+  wakingUp = 0;
   idling = false;
   tired = false;
   sleeping = false;
@@ -473,13 +501,84 @@ void wakeUp() {
   Serial.print(". Resuming pattern: ");
   Serial.println(resumePatternIndex);
 
-  delay(50);
+  currentPatternIndex = resumePatternIndex;
+  currentPaletteIndex = resumePaletteIndex;
+  currentPalette = palettes[currentPaletteIndex]; 
+  speed = 30;
+  FastLED.setBrightness(BRIGHTNESS);
+}
+
+void goToSleep() {
+  // This function will fade out all lights after idle() has been running for some time
+  Serial.println("Going to sleep");
+
+  idling = false;
+  FastLED.clear(true);
+  FastLED.setBrightness(0);
+
+  sleeping = true;
+  tired = false;
+
+  //sleep();
+}
+
+void sleep() {
+  EVERY_N_SECONDS( 5 )  { Serial.println("Still sleeping."); }
+  // This function simply watches for a Light signal signal from the 'brain' CircuitPlayground
+  FastLED.clear(true);
+  //luxDetect();
+
+  if ( stopDetected < IDLE_TIMER && stopDetected < SLEEP_TIMER ) {
+    wakeUp();
+  }
+}
+
+void wakeUp() {
+
+  if ( wakingUp > 1800 ) {
+    soundClipDelay();
+    wakingUp = 0;
+  }
+
+  wakingUp = 0;
+  idling = false;
+  tired = false;
+  sleeping = false;
+  Serial.println("Waking up.");
+  Serial.print("Resuming palette: ");
+  Serial.print(resumePaletteIndex);
+  Serial.print(". Resuming pattern: ");
+  Serial.println(resumePatternIndex);
 
   currentPatternIndex = resumePatternIndex;
   currentPaletteIndex = resumePaletteIndex;
   currentPalette = palettes[currentPaletteIndex]; 
   speed = 30;
   FastLED.setBrightness(BRIGHTNESS);
+}
+
+void soundClipDelay() {
+  if ( fileSelect = 0 ) {
+    delay(1845);
+  }
+  else if ( fileSelect = 1 ) {
+    delay(2000);
+  }
+  else if ( fileSelect = 2 ) {
+    Serial.println("Playing astralPlanes.wav");
+  }
+
+  if ( fileSelect = 0 ) { 
+    fileSelect = 1; 
+  }
+  else if ( fileSelect = 1 )
+  {
+    fileSelect = 2;
+  }
+  else if ( fileSelect = 2 )
+  {
+    fileSelect = 0;
+  }
 }
 
 ////////////////////////////////////////////////////////////

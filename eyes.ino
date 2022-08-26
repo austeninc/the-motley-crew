@@ -466,6 +466,7 @@ void idle() {
   CircuitPlayground.strip.clear();
   CircuitPlayground.strip.show();
   */
+
   // Store the previous state
   resumePaletteIndex = currentPaletteIndex;
   resumePatternIndex = currentPatternIndex;
@@ -563,15 +564,23 @@ void goToSleep() {
   // Do sleepy things
 
   Serial.println("Going to sleep");
+
   idling = false;
   FastLED.clear(true);
+  FastLED.setBrightness(0);
+
   sleeping = true;
   tired = false;
+
+  //sleep();
 }
 
 void sleep() {
-  // This function checks for motion. If motion is detected, call wakeUp()
 
+  EVERY_N_SECONDS( 5 )  { Serial.println("Still sleeping."); }
+  // This function checks for motion. If motion is detected, call wakeUp()
+  FastLED.clear(true);
+  
   if ( stopDetected < IDLE_TIMER && stopDetected < SLEEP_TIMER ) {
     wakeUp();
   }
