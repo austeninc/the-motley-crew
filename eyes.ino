@@ -78,10 +78,10 @@ uint8_t speed = 30;
 // Set up variables for motion detection & idle/sleep
 
 float X, Y, Z;
-#define MOVE_THRESHOLD 4
+#define MOVE_THRESHOLD 4.5
 int stopDetected = 0;
-#define IDLE_TIMER  10
-#define SLEEP_TIMER 20
+#define IDLE_TIMER  120
+#define SLEEP_TIMER 600
 
 int wakingUp = 0;
 
@@ -616,15 +616,15 @@ void soundClip() {
     delay(1845);
     AudioPlayer.stopChannel(0);
   }
-  if ( fileSelect = 1 ) {
+  else if ( fileSelect = 1 ) {
     AudioPlayer.play(filename1, 0);
     Serial.println("Playing oiClarence.wav");
     delay(2000);
     AudioPlayer.stopChannel(0);
   }
-  if ( fileSelect = 2 ) {
+  else if ( fileSelect = 2 ) {
     AudioPlayer.play(filename2, 0);
-    Serial.println("astralPlanes.wav");
+    Serial.println("Playing astralPlanes.wav");
     delay(5270);
     AudioPlayer.stopChannel(0);
   }
@@ -712,7 +712,9 @@ Serial.print("Checking motion...");
   // http://en.wikipedia.org/wiki/Euclidean_vector#Length
   double storedVector = X*X;
   storedVector += Y*Y;
-  storedVector += Z*Z;
+  //double storedVector = Y*Y;
+  //storedVector += Z*Z;
+  //double storedVector = Z*Z;
   storedVector = sqrt(storedVector);
   Serial.print("Len: "); Serial.print(storedVector);
   
@@ -725,7 +727,9 @@ Serial.print("Checking motion...");
   Z = CircuitPlayground.motionZ();
   double newVector = X*X;
   newVector += Y*Y;
-  newVector += Z*Z;
+  //double newVector = Y*Y;
+  //newVector += Z*Z;
+  //double newVector = Z*Z;
   newVector = sqrt(newVector);
   Serial.print(" New Len: "); Serial.println(newVector);
   
