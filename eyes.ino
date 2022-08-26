@@ -80,7 +80,7 @@ uint8_t speed = 30;
 float X, Y, Z;
 #define MOVE_THRESHOLD 4.5
 int stopDetected = 0;
-#define IDLE_TIMER  120
+#define IDLE_TIMER  180
 #define SLEEP_TIMER 600
 
 int wakingUp = 0;
@@ -434,7 +434,7 @@ void loop()
 // Pattern/Color Changing Functions
 
 void nextPattern() {
-  currentPatternIndex = ( currentPatternIndex + 1 ) % ARRAY_SIZE( patterns );
+  currentPatternIndex = ( currentPatternIndex + 1 ) % ( ARRAY_SIZE( patterns ) - 1 );
 }
 
 void nextPalette() {
