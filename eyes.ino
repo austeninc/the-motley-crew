@@ -472,7 +472,10 @@ void idle() {
   resumePatternIndex = currentPatternIndex;
 
   // Setup the idle animation
-  currentPalette = palettes[3];
+
+  currentPalette = purple;
+
+  //currentPalette = palettes[3];
   currentPatternIndex = 3;
   speed = 15;
   FastLED.setBrightness(30);
