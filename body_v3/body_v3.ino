@@ -39,7 +39,7 @@ uint8_t speed = 30;
 float X, Y, Z;
 #define MOVE_THRESHOLD 3
 int stopDetected = 0;
-#define IDLE_TIMER  120
+#define IDLE_TIMER  180
 #define SLEEP_TIMER 600
 
 int wakingUp = 0;
@@ -118,6 +118,11 @@ SimplePatternList patterns = {
     confusedEast, // Good shit.
     confusedEastV2,
     niftyFrontBack,
+
+    // FOR IDLE ONLY
+    //clockwisePalette
+    //southWestPalette
+    experimentalPalette
 
 
     //experimentalPalette
@@ -299,7 +304,7 @@ const CRGBPalette16 palettes[] = {
     RainbowColors_p,  // 0  //Rainbow, keep
     bhw1_04_gp,       // 1  // Purple orange yellow, GOOD
     wiki_knutux_gp,   // 2  // Orange to green, okay
-    purple,       // 3  // Purple - just purple. Pretty alright. Idle color?
+    //purple,       // 3  // Purple - just purple. Pretty alright. Idle color?
     bhw4_057_gp,      // 4  // Pink & red, good. Love vibes
     bhw1_28_gp,       // 5  // Mermaid colors, good with front-to-back patterns
     Sunset_Real_gp,   // 6  // Heat map good
@@ -375,7 +380,7 @@ void loop() {
 
 void nextPattern() {
   Serial.println("Updating pattern.");
-  currentPatternIndex = ( currentPatternIndex + 1 ) % ARRAY_SIZE( patterns );
+  currentPatternIndex = ( currentPatternIndex + 1 ) % ( ARRAY_SIZE( patterns ) - 1 );
 }
 
 void nextPalette() {
@@ -446,8 +451,8 @@ void idle() {
   currentPalette = purple;
 
   //currentPalette = palettes[3];
-  currentPatternIndex = 3;
-  speed = 15;
+  currentPatternIndex = 6; // index 6 is not looped through in the main loop()
+  speed = 10;
   FastLED.setBrightness(30);
 
   // Loop until idling = false || tired = true
