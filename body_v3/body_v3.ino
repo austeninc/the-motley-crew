@@ -37,7 +37,7 @@ uint8_t speed = 30;
 // Set up variables for motion detection & idle/sleep
 
 float X, Y, Z;
-#define MOVE_THRESHOLD 4.5
+#define MOVE_THRESHOLD 3
 int stopDetected = 0;
 #define IDLE_TIMER  120
 #define SLEEP_TIMER 600
