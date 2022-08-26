@@ -194,23 +194,6 @@ SimplePatternList patterns = {
 
     // Idle Animation -- excluded from regular pattern rotation
     southPalette
-    
-//    northPalette,
-//    northEastPalette,
-//    eastPalette,
-//    southEastPalette,
-//    southPalette,
-//    southWestPalette,
-//    westPalette,
-//    northWestPalette,
-
-    // standard FastLED demo reel examples:
-    //  rainbow,
-    //  rainbowWithGlitter,
-    //  confetti,
-    //  sinelon,
-    //  juggle,
-    //  bpm
 };
 
 const uint8_t patternCount = ARRAY_SIZE(patterns);
@@ -337,52 +320,19 @@ DEFINE_GRADIENT_PALETTE( bhw1_04_gp ) {
   198,  17,  1, 79,
   255,   0,  0, 45};
 
-// Gradient palette "dreaming_gp", originally from
-// http://soliton.vm.bytemark.co.uk/pub/cpt-city/jjg/neo10/liht/tn/dreaming.png.index.html
-// converted for FastLED with gammas (2.6, 2.2, 2.5)
-// Size: 80 bytes of program space.
-
-DEFINE_GRADIENT_PALETTE( dreaming_gp ) {
-    0, 229,100,228,
-   25, 229,100,228,
-   25, 165, 66,188,
-   51, 165, 66,188,
-   51, 107, 41,151,
-   76, 107, 41,151,
-   76,  64, 25,119,
-  102,  64, 25,119,
-  102,  32, 13, 91,
-  127,  32, 13, 91,
-  127,  20,  4, 66,
-  153,  20,  4, 66,
-  153,  13,  3, 47,
-  178,  13,  3, 47,
-  178,   8,  3, 31,
-  204,   8,  3, 31,
-  204,   5,  2, 19,
-  229,   5,  2, 19,
-  229,   2,  1, 10,
-  255,   2,  1, 10};
-
 //typedef void (*SimplePaletteList[])
 const CRGBPalette16 palettes[] = {
     RainbowColors_p,  // 0  //Rainbow, keep
     bhw1_04_gp,       // 1  // Purple orange yellow, GOOD
     wiki_knutux_gp,   // 2  // Orange to green, okay
-    //purple,           // 3  // Purple - just purple. Pretty alright. Idle color?
-    bhw4_057_gp,      // 4  // Pink & red, good. Love vibes
-    bhw1_28_gp,       // 5  // Mermaid colors, good with front-to-back patterns
-    Sunset_Real_gp,   // 6  // Heat map good
-    purplefly_gp,     // 7  // Pretty good. It's a vibe.
-    LavaColors_p,     // 8  // Lava, hot, pretty good. A little too scary maybe. Angry? Bumped?
-    IceColors_p       // 9  // Better than CloudColors_p. Keep.
+    bhw4_057_gp,      // 3  // Pink & red, good. Love vibes
+    bhw1_28_gp,       // 4  // Mermaid colors, good with front-to-back patterns
+    Sunset_Real_gp,   // 5  // Heat map good
+    purplefly_gp,     // 6  // Pretty good. It's a vibe.
+    LavaColors_p,     // 7  // Lava, hot, pretty good. A little too scary maybe. Angry? Bumped?
+    IceColors_p       // 8  // Better than CloudColors_p. Keep.
 
-    //// POSSIBLE REJECTS
-    //dreaming_gp,      // Purple/pink, faded, nice??? I kinda hate it tbh
-    //Analogous_1_gp,   // Blue / red - stark, decent. Honestly get rid of in favor of Sunset_Real_gp
-    //OceanColors_p,    // Sparkly ocean vibes, okay. Maybe get rid of it.
-    //ForestColors_p,   // Green, earthy, okay. Maybe eliminate.
-    //PartyColors_p,    // Tighter rainbow, pretty good... maybe prefer normal rainbow on the body.
+    //purple          // Purple - just purple. Used in Idle only
 };
 
 const uint8_t paletteCount = ARRAY_SIZE(palettes);

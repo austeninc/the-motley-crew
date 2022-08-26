@@ -31,7 +31,7 @@ uint8_t speed = 30;
 float X, Y, Z;
 #define MOVE_THRESHOLD 3
 int stopDetected = 0;
-#define IDLE_TIMER  180
+#define IDLE_TIMER  5
 #define SLEEP_TIMER 600
 
 int wakingUp = 0;
@@ -96,46 +96,17 @@ void setup() {
 typedef void (*SimplePatternList[])();
 SimplePatternList patterns = {
     //// 2D map examples:
-    //northEastPalette, // Coollllll ISH. Front-to-Back fun design. Beating heart almost
-    eastPalette,      // Great. Standard front-to-back. Could be faster?
-    //southEastPalette, // Mehhhh kind of a weird flashing pattern. Front to back though
-    //westPalette,      // Not bad. Back-to-front kind of deal.
-    //northWestPalette, // A lot like northEast. Kind of flashy but good. Back-to-front.
+    eastPalette,      // 0  // Great. Standard front-to-back. Could be faster?
+    inwardPalette,    // 1  // Not bad, use sparingly.
+    outwardPalette,   // 2  // Pretty solid. 
 
-    
-    inwardPalette, // Not bad, use sparingly.
-    outwardPalette, // Pretty solid. 
-
-    //// Others
-    confusedEast, // Good shit.
-    confusedEastV2,
-    niftyFrontBack,
+    //// Homemade patterns
+    confusedEast,     // 3  // Good shit.
+    confusedEastV2,   // 4
+    niftyFrontBack,   // 5
 
     // FOR IDLE ONLY
-    //clockwisePalette
-    //southWestPalette
-    experimentalPalette
-
-
-    //experimentalPalette
-    
-    // standard FastLED demo reel examples:
-    //  rainbow,
-
-    //// Not built yet
-    //  rainbowWithGlitter,
-    //  confetti,
-
-    //// POSSIBLE REJECTS
-    //northPalette,     // weird, no like... COULD BE GOOD IDLE WITH RIGHT COLORS
-    //southWestPalette, // Bad.
-    //southPalette,     // Opposite of north palette... I like it a little better but ugh. Get rid of her.
-    //clockwisePalette, // Fuck this. Honestly it's just confusing.
-    //counterClockwisePalette, // Also just confusing. Fuck this one too.
-    //beatwave, // I hate it!
-    //juggle, // Honestly... chaos. But do I hate it? Not sure...
-    //sinelon, // Mediochre at best.
-    //bpm, // Chaotic horror
+    experimentalPalette // 6 -- not looped through
 };
 
 const uint8_t patternCount = ARRAY_SIZE(patterns);
@@ -189,18 +160,6 @@ DEFINE_GRADIENT_PALETTE( bhw1_28_gp ) {
   206, 252, 73,255,
   232,  78, 12,214,
   255,   0,149,242};
-
-// Gradient palette "Analogous_1_gp", originally from
-// http://soliton.vm.bytemark.co.uk/pub/cpt-city/nd/red/tn/Analogous_1.png.index.html
-// converted for FastLED with gammas (2.6, 2.2, 2.5)
-// Size: 20 bytes of program space.
-
-DEFINE_GRADIENT_PALETTE( Analogous_1_gp ) {
-    0,   3,  0,255,
-   63,  23,  0,255,
-  127,  67,  0,255,
-  191, 142,  0, 45,
-  255, 255,  0,  0};
 
 // Gradient palette "bhw4_057_gp", originally from
 // http://soliton.vm.bytemark.co.uk/pub/cpt-city/bhw/bhw4/tn/bhw4_057.png.index.html
@@ -262,54 +221,19 @@ DEFINE_GRADIENT_PALETTE( bhw1_04_gp ) {
   198,  17,  1, 79,
   255,   0,  0, 45};
 
-// Gradient palette "dreaming_gp", originally from
-// http://soliton.vm.bytemark.co.uk/pub/cpt-city/jjg/neo10/liht/tn/dreaming.png.index.html
-// converted for FastLED with gammas (2.6, 2.2, 2.5)
-// Size: 80 bytes of program space.
-
-DEFINE_GRADIENT_PALETTE( dreaming_gp ) {
-    0, 229,100,228,
-   25, 229,100,228,
-   25, 165, 66,188,
-   51, 165, 66,188,
-   51, 107, 41,151,
-   76, 107, 41,151,
-   76,  64, 25,119,
-  102,  64, 25,119,
-  102,  32, 13, 91,
-  127,  32, 13, 91,
-  127,  20,  4, 66,
-  153,  20,  4, 66,
-  153,  13,  3, 47,
-  178,  13,  3, 47,
-  178,   8,  3, 31,
-  204,   8,  3, 31,
-  204,   5,  2, 19,
-  229,   5,  2, 19,
-  229,   2,  1, 10,
-  255,   2,  1, 10};
-
-
-
 //typedef void (*SimplePaletteList[])
 const CRGBPalette16 palettes[] = {
     RainbowColors_p,  // 0  //Rainbow, keep
     bhw1_04_gp,       // 1  // Purple orange yellow, GOOD
     wiki_knutux_gp,   // 2  // Orange to green, okay
-    //purple,       // 3  // Purple - just purple. Pretty alright. Idle color?
-    bhw4_057_gp,      // 4  // Pink & red, good. Love vibes
-    bhw1_28_gp,       // 5  // Mermaid colors, good with front-to-back patterns
-    Sunset_Real_gp,   // 6  // Heat map good
-    purplefly_gp,     // 7  // Pretty good. It's a vibe.
-    LavaColors_p,     // 8  // Lava, hot, pretty good. A little too scary maybe. Angry? Bumped?
-    IceColors_p       // 9  // Better than CloudColors_p. Keep.
+    bhw4_057_gp,      // 3  // Pink & red, good. Love vibes
+    bhw1_28_gp,       // 4  // Mermaid colors, good with front-to-back patterns
+    Sunset_Real_gp,   // 5  // Heat map good
+    purplefly_gp,     // 6  // Pretty good. It's a vibe.
+    LavaColors_p,     // 7  // Lava, hot, pretty good. A little too scary maybe. Angry? Bumped?
+    IceColors_p       // 8  // Better than CloudColors_p. Keep.
 
-    //// POSSIBLE REJECTS
-    //dreaming_gp,      // Purple/pink, faded, nice??? I kinda hate it tbh
-    //Analogous_1_gp,   // Blue / red - stark, decent. Honestly get rid of in favor of Sunset_Real_gp
-    //OceanColors_p,    // Sparkly ocean vibes, okay. Maybe get rid of it.
-    //ForestColors_p,   // Green, earthy, okay. Maybe eliminate.
-    //PartyColors_p,    // Tighter rainbow, pretty good... maybe prefer normal rainbow on the body.
+    //purple          // Purple - just purple. Used in Idle only
 };
 
 const uint8_t paletteCount = ARRAY_SIZE(palettes);
@@ -523,67 +447,11 @@ void soundClipDelay() {
 // Define the patterns
 // 2D map examples:
 
-void northPalette()
-{
-  for (uint16_t i = 0; i < NUM_LEDS; i++)
-  {
-    leds[i] = ColorFromPalette(currentPalette, offset - coordsY[i]);
-  }
-}
-
-void northEastPalette()
-{
-  for (uint16_t i = 0; i < NUM_LEDS; i++)
-  {
-    leds[i] = ColorFromPalette(currentPalette, offset - (coordsX[i] + coordsY[i]));
-  }
-}
-
 void eastPalette()
 {
   for (uint16_t i = 0; i < NUM_LEDS; i++)
   {
     leds[i] = ColorFromPalette(currentPalette, offset - coordsX[i]);
-  }
-}
-
-void southEastPalette()
-{
-  for (uint16_t i = 0; i < NUM_LEDS; i++)
-  {
-    leds[i] = ColorFromPalette(currentPalette, offset - coordsX[i] + coordsY[i]);
-  }
-}
-
-void southPalette()
-{
-  for (uint16_t i = 0; i < NUM_LEDS; i++)
-  {
-    leds[i] = ColorFromPalette(currentPalette, offset + coordsY[i]);
-  }
-}
-
-void southWestPalette()
-{
-  for (uint16_t i = 0; i < NUM_LEDS; i++)
-  {
-    leds[i] = ColorFromPalette(currentPalette, offset + coordsX[i] + coordsY[i]);
-  }
-}
-
-void westPalette()
-{
-  for (uint16_t i = 0; i < NUM_LEDS; i++)
-  {
-    leds[i] = ColorFromPalette(currentPalette, offset + coordsX[i]);
-  }
-}
-
-void northWestPalette()
-{
-  for (uint16_t i = 0; i < NUM_LEDS; i++)
-  {
-    leds[i] = ColorFromPalette(currentPalette, offset + coordsX[i] - coordsY[i]);
   }
 }
 
@@ -619,36 +487,6 @@ void experimentalPalette()
   }
 }
 
-void bpm()
-{
-  // colored stripes pulsing at a defined Beats-Per-Minute (BPM)
-  uint8_t BeatsPerMinute = 30;
-  CRGBPalette16 palette = currentPalette;
-  uint8_t beat = beatsin8(BeatsPerMinute, 64, 255);
-  //uint8_t beat = beatsin8(BeatsPerMinute, 0, 400);
-  for (int i = 0; i < NUM_LEDS; i++)
-  { // 9948
-    leds[i] = ColorFromPalette(palette, offset + (i * 2), beat - offset + (i * 10));
-  }
-}
-
-void clockwisePalette()
-{
-  for (uint16_t i = 0; i < NUM_LEDS; i++)
-  {
-    leds[i] = ColorFromPalette(currentPalette, offset + angles[i]);
-  }
-}
-
-void counterClockwisePalette()
-{
-  for (uint16_t i = 0; i < NUM_LEDS; i++)
-  {
-    leds[i] = ColorFromPalette(currentPalette, offset - angles[i]);
-
-  }
-}
-
 void outwardPalette()
 {
   for (uint16_t i = 0; i < NUM_LEDS; i++)
@@ -665,43 +503,6 @@ void inwardPalette()
     leds[i] = ColorFromPalette(currentPalette, offset + radii[i]);
   }
 }
-
-void sinelon()
-{
-  // a colored dot sweeping back and forth, with fading trails
-  fadeToBlackBy(leds, NUM_LEDS, 5); // 5 was originally 20
-  //int pos = beatsin16(13, 0, NUM_LEDS - 1);
-  int pos = beatsin16(6, 0, NUM_LEDS - 1);
-  leds[pos] += CHSV(offset, 255, 192);
-}
-
-const byte dotCount = 4;
-const byte hues = 240 / dotCount;
-
-void juggle()
-{
-  // eight colored dots, weaving in and out of sync with each other
-  fadeToBlackBy(leds, NUM_LEDS, 20);
-  for (int i = 0; i < dotCount; i++)
-  {
-    //leds[beatsin16(i + 8, 0, NUM_LEDS - 1)] |= CHSV(i * hues, 200, 255);
-    leds[beatsin16(i + 3, 0, NUM_LEDS - 1)] |= CHSV(i * hues, 200, 255);
-  }
-}
-
-void beatwave() {
-  
-  uint8_t wave1 = beatsin8(9, 0, 255);                        // That's the same as beatsin8(9);
-  uint8_t wave2 = beatsin8(8, 0, 255);
-  uint8_t wave3 = beatsin8(7, 0, 255);
-  uint8_t wave4 = beatsin8(6, 0, 255);
-
-  for (int i=0; i<NUM_LEDS; i++) {
-    //leds[i] = ColorFromPalette( currentPalette, i+wave1+wave2+wave3+wave4, 255, currentBlending); 
-    leds[i] = ColorFromPalette( currentPalette, i+wave1+wave2+wave3+wave4, 255); 
-  }
-  
-} // beatwave()
 
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
