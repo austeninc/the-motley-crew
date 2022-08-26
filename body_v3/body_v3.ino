@@ -219,12 +219,12 @@ DEFINE_GRADIENT_PALETTE( bhw4_057_gp ) {
   204,  17,  0,  1,
   255,   6,  0,  1};
 
-// Gradient palette "bhw1_33_gp", originally from
+// Gradient palette "bhw1_33_gp" renamed "purple", originally from
 // http://soliton.vm.bytemark.co.uk/pub/cpt-city/bhw/bhw1/tn/bhw1_33.png.index.html
 // converted for FastLED with gammas (2.6, 2.2, 2.5)
 // Size: 16 bytes of program space.
 
-DEFINE_GRADIENT_PALETTE( bhw1_33_gp ) {
+DEFINE_GRADIENT_PALETTE( purple ) {
     0,   2,  1,  8,
    94,  79,  2,212,
   140, 110, 11,197,
@@ -299,7 +299,7 @@ const CRGBPalette16 palettes[] = {
     RainbowColors_p,  // 0  //Rainbow, keep
     bhw1_04_gp,       // 1  // Purple orange yellow, GOOD
     wiki_knutux_gp,   // 2  // Orange to green, okay
-    bhw1_33_gp,       // 3  // Purple - just purple. Pretty alright. Idle color?
+    purple,       // 3  // Purple - just purple. Pretty alright. Idle color?
     bhw4_057_gp,      // 4  // Pink & red, good. Love vibes
     bhw1_28_gp,       // 5  // Mermaid colors, good with front-to-back patterns
     Sunset_Real_gp,   // 6  // Heat map good
