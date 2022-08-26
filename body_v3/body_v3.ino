@@ -6,14 +6,6 @@
 ////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////
-// Set up variable for light detection
-
-//uint8_t lux;
-
-////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////
 // Set up the board & LED strips
 
 // Identifying data pins
@@ -368,8 +360,6 @@ void loop() {
 
   EVERY_N_SECONDS( 90 ) { nextPattern(); }
   EVERY_N_SECONDS( 60 ) { nextPalette(); }
-
-  //luxDetect(); // Checks for light signals from brain
 }
 
 ////////////////////////////////////////////////////////////
@@ -392,49 +382,6 @@ void nextPalette() {
 ////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////
-// Light Signal Detection
-/*
-void luxDetect() {
-  lux = CircuitPlayground.lightSensor();
-  //Serial.print("lux = ");
-  //Serial.println(lux);
-
-  if ( lux > 100 && ! idling && ! tired && ! sleeping ) {
-    Serial.println("Starting idle");
-    delay(200);
-    idle();
-  }
-
-  if ( lux > 100 && idling && ! tired && ! sleeping ) {
-    delay(450);
-    lux = CircuitPlayground.lightSensor();
-
-    // Check for single pulse of light or two pulses
-    if (lux > 100 && idling && ! tired && ! sleeping ) { 
-      // If a second pulse is detected, go to sleep
-      delay(400);
-      goToSleep();
-    }
-    if (lux < 100 && idling && ! tired && ! sleeping ) { 
-      // If only one pulse was detected, wake from idle state
-      Serial.println("No sleep for you!");
-      delay(300);
-      wakeUp();
-    }
-  }
-
-  if ( lux > 100 && ! idling && ! tired && sleeping ) {
-    Serial.println("Time to wake up!");
-    delay(300);
-    wakeUp();
-  }
-  
-}
-*/
-////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////
 // Idle & Sleep Functions
 
 void idle() {
@@ -447,20 +394,14 @@ void idle() {
   resumePatternIndex = currentPatternIndex;
 
   // Setup the idle animation
-
   currentPalette = purple;
-
-  //currentPalette = palettes[3];
   currentPatternIndex = 6; // index 6 is not looped through in the main loop()
   speed = 10;
   FastLED.setBrightness(30);
 
   // Loop until idling = false || tired = true
-  // Check for light signal from eyes. If light detected, take action in luxDetect()
+  // Check for motion. If motion detected, exit loop and wake up. Else, sleep when timer reached
   while (idling && ! tired) {
-    // Check for light signal
-    //luxDetect();
-
     // Run LEDs
     // Call the current pattern function once, updating the 'leds' array
     patterns[currentPatternIndex]();
@@ -486,18 +427,6 @@ void idle() {
 }
 
 void noSleepForYou() {
-  /*
-  // Flash the LEDs once to wake up again
-  Serial.println("Flashing light");
-  for (int i=0; i<10; ++i) {
-      CircuitPlayground.strip.setPixelColor(i, 255, 0, 255);
-  }
-  CircuitPlayground.strip.show();
-  delay(200);
-  CircuitPlayground.strip.clear();
-  CircuitPlayground.strip.show();
-  */
-
   // Do local wake up things
   wakingUp = 0;
   idling = false;
@@ -517,7 +446,7 @@ void noSleepForYou() {
 }
 
 void goToSleep() {
-  // This function will fade out all lights after idle() has been running for some time
+  // This function will turn off all lights after idle() has been running for some time
   Serial.println("Going to sleep");
 
   idling = false;
@@ -532,9 +461,8 @@ void goToSleep() {
 
 void sleep() {
   EVERY_N_SECONDS( 5 )  { Serial.println("Still sleeping."); }
-  // This function simply watches for a Light signal signal from the 'brain' CircuitPlayground
+  // This function simply watches for motion & triggers wakeUp if detected
   FastLED.clear(true);
-  //luxDetect();
 
   if ( stopDetected < IDLE_TIMER && stopDetected < SLEEP_TIMER ) {
     wakeUp();
@@ -566,6 +494,8 @@ void wakeUp() {
 }
 
 void soundClipDelay() {
+  // This functions introduces a delay to account for the 'brain' playing a sound clip.
+  // Ideally this will keep the lights on eyes vs body in sync as much as possible without communication
   if ( fileSelect = 0 ) {
     delay(1845);
   }

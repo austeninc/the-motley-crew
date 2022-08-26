@@ -9,14 +9,14 @@
 
 // This is used to play sound. Thank you AloyseTech!
 #include <Audio_FeatherM0.h>
+
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////
-// Set up accessing flash storage
-//
-// Define the board type... Circuit Playground Express is 
-// not auto-recognized by the SPIFlash/Sdfat libaries
+// Set up flash storage access
+
+// Define the board type... Circuit Playground Express is not auto-recognized by the SPIFlash/Sdfat libaries
 #define EXTERNAL_FLASH_DEVICES  GD25Q16C
 #define EXTERNAL_FLASH_USE_SPI  SPI
 #define EXTERNAL_FLASH_USE_CS   SS
@@ -27,11 +27,13 @@ Adafruit_SPIFlash flash(&flashTransport);
 
 // Create a file system object from SdFat
 FatFileSystem fatfs;
+
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////
 // Set up audio player
+
 SamdAudio AudioPlayer;
 
 // Define audio properties
@@ -134,7 +136,6 @@ void setup()
   // Init Circuit Playground library & disable onboard speaker (it is shite)
   CircuitPlayground.begin();
   CircuitPlayground.speaker.off();
-  //CircuitPlayground.strip.setBrightness(120); // Remove flash
 
   // Initialize flash library and check its chip ID.
   if (!flash.begin()) {
@@ -453,23 +454,10 @@ void nextPalette() {
 // Idle & Sleep Functions
 
 void idle() {
-  // This function will send a light pulse to the 'nerves' CircuitPlayground to have it begin its idle loop.
   // Then this function will loop through the eyes idle animations when bool `idling` is true
 
   idling = true;
   tired = false;
-
-  /*
-  // Flash light to trigger idle mode in nerves
-  Serial.println("Flashing light");
-  for (int i=0; i<10; ++i) {
-      CircuitPlayground.strip.setPixelColor(i, 255, 0, 255);
-  }
-  CircuitPlayground.strip.show();
-  delay(100);
-  CircuitPlayground.strip.clear();
-  CircuitPlayground.strip.show();
-  */
 
   // Store the previous state
   resumePaletteIndex = currentPaletteIndex;
@@ -478,8 +466,6 @@ void idle() {
   // Setup the idle animation
 
   currentPalette = purple;
-
-  //currentPalette = palettes[3];
   currentPatternIndex = 3;
   speed = 15;
   FastLED.setBrightness(30);
@@ -514,18 +500,6 @@ void idle() {
 }
 
 void noSleepForYou() {
-  /*
-  // Flash the LEDs once to wake up again
-  Serial.println("Flashing light");
-  for (int i=0; i<10; ++i) {
-      CircuitPlayground.strip.setPixelColor(i, 255, 0, 255);
-  }
-  CircuitPlayground.strip.show();
-  delay(200);
-  CircuitPlayground.strip.clear();
-  CircuitPlayground.strip.show();
-  */
-
   // Do local wake up things
   wakingUp = 0;
   idling = false;
@@ -545,28 +519,7 @@ void noSleepForYou() {
 }
 
 void goToSleep() {
-  // This function will fade out all lights after idle() has been running for some time
-
-  /*
-  // Flash the LEDs twice to trigger goToSleep in nerves
-  Serial.println("Flashing light");
-  for (int i=0; i<10; ++i) {
-      CircuitPlayground.strip.setPixelColor(i, 255, 0, 255);
-  }
-  CircuitPlayground.strip.show();
-  delay(200);
-  CircuitPlayground.strip.clear();
-  CircuitPlayground.strip.show();
-  delay(250);
-  Serial.println("Flashing light");
-  for (int i=0; i<10; ++i) {
-      CircuitPlayground.strip.setPixelColor(i, 255, 0, 255);
-  }
-  CircuitPlayground.strip.show();
-  delay(400);
-  CircuitPlayground.strip.clear();
-  CircuitPlayground.strip.show();
-  */
+  // This function will turn off all lights after idle() has been running for some time
 
   // Do sleepy things
 
@@ -578,8 +531,6 @@ void goToSleep() {
 
   sleeping = true;
   tired = false;
-
-  //sleep();
 }
 
 void sleep() {
@@ -594,25 +545,13 @@ void sleep() {
 }
 
 void wakeUp() {
-  // This function will play a random sound clip and then send a light signal to the 'nerves' to resume its normal loop
+  // This function will play a random sound clip and then resume its normal loop
 
   // Play sound by calling soundClip() if we've been sleeping longer than 30 minutes, otherwise do nothing
   if ( wakingUp > 1800 ) {
     soundClip();
     wakingUp = 0;
   }
-
-  // Flash light to trigger idle mode in nerves
-  /*
-  Serial.println("Flashing light");
-  for (int i=0; i<10; ++i) {
-      CircuitPlayground.strip.setPixelColor(i, 255, 0, 255);
-  }
-  CircuitPlayground.strip.show();
-  delay(200);
-  CircuitPlayground.strip.clear();
-  CircuitPlayground.strip.show();
-  */
 
   // Do local wake up things
   wakingUp = 0;
