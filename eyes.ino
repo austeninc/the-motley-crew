@@ -80,7 +80,7 @@ uint8_t speed = 30;
 // Set up variables for motion detection & idle/sleep
 
 float X, Y, Z;
-#define MOVE_THRESHOLD 4.5
+#define MOVE_THRESHOLD 5
 int stopDetected = 0;
 #define IDLE_TIMER  180
 #define SLEEP_TIMER 600
@@ -190,7 +190,7 @@ SimplePatternList patterns = {
     outwardPalette,
     counterClockwisePalette,
     inwardPalette,
-    outwardPalette
+    outwardPalette,
 
     // Idle Animation -- excluded from regular pattern rotation
     southPalette
@@ -416,7 +416,7 @@ void idle() {
   // Setup the idle animation
 
   currentPalette = purple;
-  currentPatternIndex = 3;
+  currentPatternIndex = 6;
   speed = 15;
   FastLED.setBrightness(30);
 
@@ -607,6 +607,15 @@ void inwardPalette()
   {
     L_leds[i] = ColorFromPalette(currentPalette, offset + L_radii[i]);
     R_leds[i] = ColorFromPalette(currentPalette, offset + R_radii[i]);
+  }
+}
+
+void southPalette()
+{
+  for (uint16_t i = 0; i < NUM_LEDS; i++)
+  {
+    L_leds[i] = ColorFromPalette(currentPalette, offset + L_coordsY[i]);
+    R_leds[i] = ColorFromPalette(currentPalette, offset + R_coordsY[i]);
   }
 }
 
