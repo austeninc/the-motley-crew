@@ -190,6 +190,10 @@ SimplePatternList patterns = {
     counterClockwisePalette,
     inwardPalette,
     outwardPalette
+
+    // Idle Animation -- excluded from regular pattern rotation
+    southPalette
+    
 //    northPalette,
 //    northEastPalette,
 //    eastPalette,
@@ -364,7 +368,7 @@ const CRGBPalette16 palettes[] = {
     RainbowColors_p,  // 0  //Rainbow, keep
     bhw1_04_gp,       // 1  // Purple orange yellow, GOOD
     wiki_knutux_gp,   // 2  // Orange to green, okay
-    purple,           // 3  // Purple - just purple. Pretty alright. Idle color?
+    //purple,           // 3  // Purple - just purple. Pretty alright. Idle color?
     bhw4_057_gp,      // 4  // Pink & red, good. Love vibes
     bhw1_28_gp,       // 5  // Mermaid colors, good with front-to-back patterns
     Sunset_Real_gp,   // 6  // Heat map good
