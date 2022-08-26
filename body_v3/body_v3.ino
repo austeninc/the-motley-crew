@@ -30,12 +30,23 @@ uint8_t lux;
 uint8_t offset = 0; // rotating "base color" used by many of the patterns
 uint8_t speed = 30;
 
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////
+// Set up variables for motion detection & idle/sleep
+
+float X, Y, Z;
+#define MOVE_THRESHOLD 4.5
+int stopDetected = 0;
+#define IDLE_TIMER  120
+#define SLEEP_TIMER 600
+
+int wakingUp = 0;
+
 boolean idling = false;
 boolean tired = false;
 boolean sleeping = false;
-
-////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////
 // Set up the bike matrix
@@ -654,3 +665,64 @@ void beatwave() {
   }
   
 } // beatwave()
+
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////
+// Watch for motion 
+
+void checkMotion() {
+
+Serial.print("Checking motion...");
+
+  //CircuitPlayground.clearPixels();
+  X = CircuitPlayground.motionX();
+  Y = CircuitPlayground.motionY();
+  Z = CircuitPlayground.motionZ();
+ 
+   // Get the magnitude (length) of the 3 axis vector
+  // http://en.wikipedia.org/wiki/Euclidean_vector#Length
+  double storedVector = X*X;
+  storedVector += Y*Y;
+  //double storedVector = Y*Y;
+  //storedVector += Z*Z;
+  //double storedVector = Z*Z;
+  storedVector = sqrt(storedVector);
+  Serial.print("Len: "); Serial.print(storedVector);
+  
+  // wait a bit
+  //delay(100);
+  
+  // get new data!
+  X = CircuitPlayground.motionX();
+  Y = CircuitPlayground.motionY();
+  Z = CircuitPlayground.motionZ();
+  double newVector = X*X;
+  newVector += Y*Y;
+  //double newVector = Y*Y;
+  //newVector += Z*Z;
+  //double newVector = Z*Z;
+  newVector = sqrt(newVector);
+  Serial.print(" New Len: "); Serial.println(newVector);
+  
+  // are we moving 
+  if (abs(10*newVector - 10*storedVector) > MOVE_THRESHOLD) {
+    Serial.println("Moving!");
+    wakingUp = stopDetected;
+    stopDetected = 0;
+  }
+  else {
+    if ( stopDetected > IDLE_TIMER-1 ) {
+      stopDetected++;
+      Serial.print("Stopped. Stop counter updating to ");
+      Serial.println(stopDetected);
+      return;
+    }
+    else {
+      stopDetected++;
+      Serial.print("Stopped. Stop counter updating to ");
+      Serial.println(stopDetected);
+    }
+  }
+}
